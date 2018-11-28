@@ -5,12 +5,18 @@ using Matki.ActorSystem;
 
 namespace Matki.AbilityDesigner.Phases
 {
-    public enum Result { Success, Fail, Running }
+    // TODO: sub bariables (a variable which is different for all sub instances)
+    // TODO: shared variables
 
     public abstract class Phase : ScriptableObject
     {
+        public string customTitle { get; internal set; }
+
         public bool instant { get; internal set; }
         public bool breakOnFail { get; internal set; }
+
+        internal PhaseList phaseList { get; set; }
+        // TODO: run for sub instances
 
         private GameObject gameObject;
         private Transform transform;
