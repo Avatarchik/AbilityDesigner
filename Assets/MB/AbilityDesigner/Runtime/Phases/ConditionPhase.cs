@@ -6,6 +6,7 @@ namespace Matki.AbilityDesigner.Phases
 {
     public abstract class ConditionPhase : Phase
     {
+        [SerializeField]
         public bool invertResult { get; internal set; }
 
         // Internal Continous Methods

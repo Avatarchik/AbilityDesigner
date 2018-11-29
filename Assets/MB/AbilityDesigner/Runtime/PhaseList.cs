@@ -7,20 +7,32 @@ namespace Matki.AbilityDesigner
     [System.Serializable]
     public class PhaseList
     {
+        [SerializeField]
         public string title { get; internal set; }
+        [SerializeField]
         public bool instant { get; internal set; }
 
+        [SerializeField]
         internal Phases.Phase[] phases { get; set; }
 
         private int m_CurrentPhase;
 
         #region Phase Update
 
+        private void DefineContext(SubInstanceLink subInstanceLink)
+        {
+            AbilityContext.subInstanceLink = subInstanceLink;
+        }
+
         internal void OnStart()
         {
             for (int p = 0; p < phases.Length; p++)
             {
-                phases[p].OnInternalStart();
+                for (int s = 0; s < phases[p].runForSubInstances.Length; s++)
+                {
+                    DefineContext(phases[p].runForSubInstances[s]);
+                    phases[p].OnInternalStart();
+                }
             }
         }
 
@@ -28,7 +40,11 @@ namespace Matki.AbilityDesigner
         {
             for (int p = 0; p < phases.Length; p++)
             {
-                phases[p].OnInternalCast();
+                for (int s = 0; s < phases[p].runForSubInstances.Length; s++)
+                {
+                    DefineContext(phases[p].runForSubInstances[s]);
+                    phases[p].OnInternalCast();
+                }
             }
             m_CurrentPhase = 0;
         }
@@ -37,7 +53,11 @@ namespace Matki.AbilityDesigner
         {
             for (int p = 0; p < phases.Length; p++)
             {
-                phases[p].OnInternalReset();
+                for (int s = 0; s < phases[p].runForSubInstances.Length; s++)
+                {
+                    DefineContext(phases[p].runForSubInstances[s]);
+                    phases[p].OnInternalReset();
+                }
             }
             m_CurrentPhase = 0;
         }
@@ -58,31 +78,35 @@ namespace Matki.AbilityDesigner
 
         private Result UpdateList()
         {
-            Result result = phases[m_CurrentPhase].OnInternalUpdate();
-            switch (result)
+            for (int s = 0; s < phases[m_CurrentPhase].runForSubInstances.Length; s++)
             {
-                case Result.Success:
-                    m_CurrentPhase++;
-                    if (m_CurrentPhase >= phases.Length)
-                    {
-                        m_CurrentPhase = 0;
+                DefineContext(phases[m_CurrentPhase].runForSubInstances[s]);
+                Result result = phases[m_CurrentPhase].OnInternalUpdate();
+                switch (result)
+                {
+                    case Result.Success:
+                        m_CurrentPhase++;
+                        if (m_CurrentPhase >= phases.Length)
+                        {
+                            m_CurrentPhase = 0;
+                            return Result.Success;
+                        }
+                        break;
+                    case Result.Fail:
+                        // Break the entire ability
+                        if (phases[m_CurrentPhase].breakOnFail)
+                        {
+                            m_CurrentPhase = 0;
+                            return Result.Fail;
+                        }
+                        // if the phase is conditional then keep running until success
+                        if (phases[m_CurrentPhase].GetType().IsSubclassOf(typeof(Phases.ConditionPhase)))
+                        {
+                            return Result.Running;
+                        }
+                        // Just abandon the current list
                         return Result.Success;
-                    }
-                    break;
-                case Result.Fail:
-                    // Break the entire ability
-                    if (phases[m_CurrentPhase].breakOnFail)
-                    {
-                        m_CurrentPhase = 0;
-                        return Result.Fail;
-                    }
-                    // if the phase is conditional then keep running until success
-                    if (phases[m_CurrentPhase].GetType().IsSubclassOf(typeof(Phases.ConditionPhase)))
-                    {
-                        return Result.Running;
-                    }
-                    // Just abandon the current list
-                    return Result.Success;
+                }
             }
             return Result.Running;
         }

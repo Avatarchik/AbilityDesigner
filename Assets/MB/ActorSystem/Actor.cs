@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Matki.ActorSystem
 {
-    public class Actor : MonoBehaviour
+    public class Actor : MonoBehaviour, AbilityDesigner.IAbilityUser
     {
         #region Public Members
 
