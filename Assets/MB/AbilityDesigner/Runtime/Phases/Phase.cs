@@ -9,16 +9,20 @@ namespace Matki.AbilityDesigner.Phases
     public abstract class Phase : ScriptableObject
     {
         [SerializeField]
-        public string customTitle { get; internal set; }
+        private string m_Title;
+        public string customTitle { get { return m_Title; } internal set { m_Title = value; } }
 
         [SerializeField]
-        public bool instant { get; internal set; }
+        private bool m_Instant;
+        public bool instant { get { return m_Instant; } internal set { m_Instant = value; } }
         [SerializeField]
-        public bool breakOnFail { get; internal set; }
+        private bool m_BreakOnFail;
+        public bool breakOnFail { get { return m_BreakOnFail; } internal set { m_BreakOnFail = value; } }
 
         [SerializeField]
-        public SubInstanceLink[] runForSubInstances { get; internal set; }
-        
+        private SubInstanceLink[] m_RunForSubInstances;
+        public SubInstanceLink[] runForSubInstances { get { return m_RunForSubInstances; } internal set { m_RunForSubInstances = value; } }
+
         #region Context Redirects
 
         protected static PhaseList phaseList

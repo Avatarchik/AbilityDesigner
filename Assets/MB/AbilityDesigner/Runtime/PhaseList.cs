@@ -8,12 +8,15 @@ namespace Matki.AbilityDesigner
     public class PhaseList
     {
         [SerializeField]
-        public string title { get; internal set; }
+        private string m_Title;
+        public string title { get { return m_Title; } internal set { m_Title = value; } }
         [SerializeField]
-        public bool instant { get; internal set; }
+        private bool m_Instant;
+        public bool instant { get { return m_Instant; } internal set { m_Instant = value; } }
 
         [SerializeField]
-        internal Phases.Phase[] phases { get; set; }
+        private Phases.Phase[] m_Phases;
+        internal Phases.Phase[] phases { get { return m_Phases; } set { m_Phases = value; } }
 
         private int m_CurrentPhase;
 

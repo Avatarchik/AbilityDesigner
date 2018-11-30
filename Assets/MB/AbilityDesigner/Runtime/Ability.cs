@@ -7,32 +7,43 @@ namespace Matki.AbilityDesigner
 {
     public enum Result { Success, Fail, Running }
 
+    [CreateAssetMenu(menuName = "Ability Designer/Ability", order = 52)]
     public class Ability : ScriptableObject
     {
         [SerializeField]
-        public string title { get; internal set; }
+        private string m_Title;
+        public string title { get { return m_Title; } internal set { m_Title = value; } }
         [SerializeField]
-        public string description { get; internal set; }
+        private string m_Description;
+        public string description { get { return m_Description; } internal set { m_Description = value; } }
         [SerializeField]
-        public Texture icon { get; internal set; }
+        private Texture m_Icon;
+        public Texture icon { get { return m_Icon; } internal set { m_Icon = value; } }
 
         [SerializeField]
-        public float[] cooldowns { get; internal set; }
+        private float[] m_Cooldowns;
+        public float[] cooldowns { get { return m_Cooldowns; } internal set { m_Cooldowns = value; } }
 
         [SerializeField]
-        public int maxCountGlobal { get; internal set; }
+        private int m_MaxCountGlobal;
+        public int maxCountGlobal { get { return m_MaxCountGlobal; } internal set { m_MaxCountGlobal = value; } }
         [SerializeField]
-        public int maxCountUser { get; internal set; }
+        private int m_MaxCountUser;
+        public int maxCountUser { get { return m_MaxCountUser; } internal set { m_MaxCountUser = value; } }
 
         [SerializeField]
-        public int poolingChunkSize { get; internal set; }
+        private int m_PoolingChunkSize;
+        public int poolingChunkSize { get { return m_PoolingChunkSize; } internal set { m_PoolingChunkSize = value; } }
 
         [SerializeField]
-        internal PhaseList[] phaseLists { get; set; }
+        private PhaseList[] m_PhaseLists;
+        internal PhaseList[] phaseLists { get { return m_PhaseLists; } set { m_PhaseLists = value; } }
         [SerializeField]
-        internal SubInstanceLink[] subInstanceLinks { get; set; }
+        private SubInstanceLink[] m_SubInstanceLinks;
+        internal SubInstanceLink[] subInstanceLinks { get { return m_SubInstanceLinks; } set { m_SubInstanceLinks = value; } }
         [SerializeField]
-        internal SharedVariable[] sharedVariables { get; set; }
+        private SharedVariable[] m_SharedVariables;
+        internal SharedVariable[] sharedVariables { get { return m_SharedVariables; } set { m_SharedVariables = value; } }
 
         internal AbilityInstanceManager instanceManager { get; set; }
 

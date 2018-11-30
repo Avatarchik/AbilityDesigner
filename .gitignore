@@ -35,3 +35,9 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+Assets/EditorGUI Style Viewer/Editor/StyleViewerExample.js.meta
+Assets/EditorGUI Style Viewer/Editor/StyleViewerExample.js
+Assets/EditorGUI Style Viewer/Editor/EditorStyleViewer.js.meta
+Assets/EditorGUI Style Viewer/Editor/EditorStyleViewer.js
+Assets/EditorGUI Style Viewer/Editor.meta
+Assets/EditorGUI Style Viewer.meta

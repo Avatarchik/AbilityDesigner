@@ -8,10 +8,14 @@ namespace Matki.AbilityDesigner
     {
         [SerializeField]
         public string title { get; set; }
+
+        internal abstract void CacheDefault();
+        internal abstract void RestoreDefault();
     }
 
-    public abstract class SharedVariable<T> : SharedVariable
+    public class SharedVariable<T> : SharedVariable
     {
+        private T m_DefaultValue;
         [SerializeField]
         protected T m_Value;
         public T Value
@@ -24,6 +28,16 @@ namespace Matki.AbilityDesigner
             {
                 m_Value = value;
             }
+        }
+
+        internal override void CacheDefault()
+        {
+            m_DefaultValue = m_Value;
+        }
+
+        internal override void RestoreDefault()
+        {
+            m_Value = m_DefaultValue;
         }
     }
 }

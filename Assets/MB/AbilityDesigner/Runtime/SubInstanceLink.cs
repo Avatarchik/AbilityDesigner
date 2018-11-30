@@ -7,17 +7,21 @@ namespace Matki.AbilityDesigner
     public class SubInstanceLink
     {
         [SerializeField]
-        public string title { get; internal set; }
+        private string m_Title;
+        public string title { get { return m_Title; } internal set { m_Title = value; } }
 
         public enum Spawn { Originator, Target, Zero };
         [SerializeField]
-        public Spawn spawn { get; internal set; }
+        private Spawn m_Spawn;
+        public Spawn spawn { get { return m_Spawn; } internal set { m_Spawn = value; } }
 
         [SerializeField]
-        public Vector3 spawnOffset { get; internal set; }
+        private Vector3 m_SpawnOffset;
+        public Vector3 spawnOffset { get { return m_SpawnOffset; } internal set { m_SpawnOffset = value; } }
 
         [SerializeField]
-        public GameObject obj { get; internal set; }
+        private GameObject m_Obj;
+        public GameObject obj { get { return m_Obj; } internal set { m_Obj = value; } }
 
         // Cached data
         internal Transform transform { get; private set; }

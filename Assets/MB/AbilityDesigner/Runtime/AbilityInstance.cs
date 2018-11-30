@@ -27,6 +27,11 @@ namespace Matki.AbilityDesigner
             {
                 phaseLists[p].OnStart();
             }
+            
+            for (int v = 0; v < sharedVariables.Length; v++)
+            {
+                sharedVariables[v].CacheDefault();
+            }
         }
 
         internal void Cast(IAbilityUser originator, IAbilityUser target)
@@ -78,6 +83,11 @@ namespace Matki.AbilityDesigner
                 }
 
                 subInstanceLinks[s].obj.SetActive(true);
+            }
+
+            for (int v = 0; v < sharedVariables.Length; v++)
+            {
+                sharedVariables[v].RestoreDefault();
             }
 
             for (int p = 0; p < phaseLists.Length; p++)
