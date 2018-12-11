@@ -4,8 +4,19 @@ using UnityEngine;
 
 namespace Matki.AbilityDesigner
 {
+    [System.Serializable]
     public class SubInstanceLink
     {
+        #if UNITY_EDITOR
+        #region Editor Fields
+
+        [SerializeField]
+        private bool m_Foldout;
+        internal bool foldout { get { return m_Foldout; } set { m_Foldout = value; } }
+
+        #endregion
+        #endif
+
         [SerializeField]
         private string m_Title;
         public string title { get { return m_Title; } internal set { m_Title = value; } }

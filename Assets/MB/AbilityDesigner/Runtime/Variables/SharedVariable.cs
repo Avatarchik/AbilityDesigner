@@ -7,7 +7,8 @@ namespace Matki.AbilityDesigner
     public abstract class SharedVariable : ScriptableObject
     {
         [SerializeField]
-        public string title { get; set; }
+        private string m_Title;
+        public string title { get { return m_Title; } internal set { m_Title = value; } }
 
         internal abstract void CacheDefault();
         internal abstract void RestoreDefault();

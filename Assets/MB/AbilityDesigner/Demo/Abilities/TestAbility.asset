@@ -14,10 +14,71 @@ MonoBehaviour:
   m_Title: 
   m_Description: 
   m_Icon: {fileID: 2800000, guid: 46d3fc783b13f184a8d6752d196e7d50, type: 3}
-  m_Cooldowns:
-  - 5
-  m_MaxCountGlobal: 0
-  m_MaxCountUser: 1
+  m_CastRules:
+  - {fileID: 114089251517314888}
+  - {fileID: 114402062100035648}
   m_PoolingChunkSize: 0
-  m_PhaseLists: []
-  m_SharedVariables: []
+  m_PhaseLists:
+  - m_Title: Default
+    m_Instant: 0
+    m_Phases: []
+  m_SubInstanceLinks:
+  - m_Foldout: 1
+    m_Title: Default
+    m_Spawn: 0
+    m_SpawnOffset: {x: 0, y: 0, z: 0}
+    m_Obj: {fileID: 1606722856494212, guid: 44f522638a6dc664290bcd5f6363380d, type: 2}
+  m_SharedVariables:
+  - {fileID: 114541811115837630}
+  - {fileID: 114400464738710966}
+--- !u!114 &114089251517314888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb52a317431982d4fbd574049d598b66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MaxCountGlobal: 0
+  m_MaxCountUser: 0
+--- !u!114 &114400464738710966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6b3f601998617b448f1b45c96cc5dee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Title: 
+  m_Value: 0
+--- !u!114 &114402062100035648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28ec07ebd22933c4c85fb81027d91bcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Cooldown: 0
+--- !u!114 &114541811115837630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6b3f601998617b448f1b45c96cc5dee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Title: 
+  m_Value: 0

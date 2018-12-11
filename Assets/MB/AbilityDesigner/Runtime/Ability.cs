@@ -21,28 +21,21 @@ namespace Matki.AbilityDesigner
         public Texture icon { get { return m_Icon; } internal set { m_Icon = value; } }
 
         [SerializeField]
-        private float[] m_Cooldowns;
-        public float[] cooldowns { get { return m_Cooldowns; } internal set { m_Cooldowns = value; } }
-
-        [SerializeField]
-        private int m_MaxCountGlobal;
-        public int maxCountGlobal { get { return m_MaxCountGlobal; } internal set { m_MaxCountGlobal = value; } }
-        [SerializeField]
-        private int m_MaxCountUser;
-        public int maxCountUser { get { return m_MaxCountUser; } internal set { m_MaxCountUser = value; } }
+        private CastRule[] m_CastRules = new CastRule[0];
+        public CastRule[] castRules { get { return m_CastRules; } internal set { m_CastRules = value; } }
 
         [SerializeField]
         private int m_PoolingChunkSize;
         public int poolingChunkSize { get { return m_PoolingChunkSize; } internal set { m_PoolingChunkSize = value; } }
 
         [SerializeField]
-        private PhaseList[] m_PhaseLists;
+        private PhaseList[] m_PhaseLists = new PhaseList[0];
         internal PhaseList[] phaseLists { get { return m_PhaseLists; } set { m_PhaseLists = value; } }
         [SerializeField]
-        private SubInstanceLink[] m_SubInstanceLinks;
+        private SubInstanceLink[] m_SubInstanceLinks = new SubInstanceLink[0];
         internal SubInstanceLink[] subInstanceLinks { get { return m_SubInstanceLinks; } set { m_SubInstanceLinks = value; } }
         [SerializeField]
-        private SharedVariable[] m_SharedVariables;
+        private SharedVariable[] m_SharedVariables = new SharedVariable[0];
         internal SharedVariable[] sharedVariables { get { return m_SharedVariables; } set { m_SharedVariables = value; } }
 
         internal AbilityInstanceManager instanceManager { get; set; }

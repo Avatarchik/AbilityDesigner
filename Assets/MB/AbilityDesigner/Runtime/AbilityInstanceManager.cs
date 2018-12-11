@@ -23,28 +23,24 @@ namespace Matki.AbilityDesigner
 
         public bool IsCastLegitimate(string id)
         {
-            if (m_OccupiedInstances.Count >= ability.maxCountGlobal)
-            {
-                return false;
-            }
-
-            if (m_Cooldowns.ContainsKey(id))
-            {
-                float offset = Time.timeSinceLevelLoad - m_Cooldowns[id];
-                if (offset > ability.cooldowns[0])
-                {
-                    return false;
-                }
-            }
-
+            int holdings = 0;
             if (m_Holdings.ContainsKey(id))
             {
-                if (m_Holdings[id] >= ability.maxCountUser)
+                holdings = m_Holdings[id];
+            }
+            
+            if (!m_Cooldowns.ContainsKey(id))
+            {
+                m_Cooldowns.Add(id, 0f);
+            }
+            
+            for (int r = 0; r < ability.castRules.Length; r++)
+            {
+                if (!ability.castRules[r].IsCastLegitimate(m_OccupiedInstances.Count, holdings, m_Cooldowns[id]))
                 {
                     return false;
                 }
             }
-
             return true;
         }
 
@@ -70,30 +66,24 @@ namespace Matki.AbilityDesigner
                     {
                         m_Holdings.Add(id, 1);
                     }
+                    
+                    if (!m_Cooldowns.ContainsKey(id))
+                    {
+                        m_Cooldowns.Add(id, -float.MaxValue);
+                    }
+
+                    for (int r = 0; r < ability.castRules.Length; r++)
+                    {
+                        float value = m_Cooldowns[id];
+                        ability.castRules[r].ApplyCast(ref value);
+                        m_Cooldowns[id] = value;
+                    }
 
                     return m_AbilityInstances[i];
                 }
             }
 
             return null;
-        }
-
-        public void CastCooldown(string id)
-        {
-            // Handle Cooldowns
-            if (!m_Cooldowns.ContainsKey(id))
-            {
-                float offset = Time.timeSinceLevelLoad - m_Cooldowns[id];
-                float newOffset;
-                int currentCooldown = GetCooldownID(offset, out newOffset);
-                m_Cooldowns[id] = Time.timeSinceLevelLoad - newOffset;
-            }
-            else
-            {
-                float newOffset;
-                int currentCooldown = GetCooldownID(float.MaxValue, out newOffset);
-                m_Cooldowns.Add(id, Time.timeSinceLevelLoad - newOffset);
-            }
         }
 
         public void ReturnInstance(string id, AbilityInstance instance)
@@ -105,22 +95,6 @@ namespace Matki.AbilityDesigner
             {
                 m_Holdings[id]--;
             }
-        }
-
-        private int GetCooldownID(float difference, out float offset)
-        {
-            float expectedCooldown = 0f;
-            for (int c = 0; c < ability.cooldowns.Length; c++)
-            {
-                expectedCooldown += ability.cooldowns[c];
-                if (expectedCooldown > difference)
-                {
-                    offset = expectedCooldown - ability.cooldowns[c];
-                    return c - 1;
-                }
-            }
-            offset = expectedCooldown;
-            return ability.cooldowns.Length - 1;
         }
 
         private void ExpandCache(int size)
