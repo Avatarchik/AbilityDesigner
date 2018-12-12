@@ -26,7 +26,7 @@ MonoBehaviour:
   - m_Title: OnCollision
     m_Instant: 0
     m_Phases:
-    - {fileID: 114784888460511250}
+    - {fileID: 114502750657052974}
   - m_Title: OnCollision Enemies
     m_Instant: 0
     m_Phases:
@@ -111,24 +111,7 @@ MonoBehaviour:
   m_Spawn: 0
   m_SpawnOffset: {x: 0, y: 0, z: 0}
   m_Obj: {fileID: 1606722856494212, guid: 44f522638a6dc664290bcd5f6363380d, type: 2}
---- !u!114 &114532185720865408
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9aa254b828bb6154cb987f7897146051, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Title: Ends the particle system
-  m_Instant: 0
-  m_BreakOnFail: 0
-  m_RunForSubInstances:
-  - {fileID: 114478052636859788}
-  - {fileID: 114840913424061544}
---- !u!114 &114784888460511250
+--- !u!114 &114502750657052974
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -143,6 +126,23 @@ MonoBehaviour:
   m_Instant: 0
   m_BreakOnFail: 0
   m_RunForSubInstances: []
+--- !u!114 &114532185720865408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9aa254b828bb6154cb987f7897146051, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Title: 
+  m_Instant: 0
+  m_BreakOnFail: 1
+  m_RunForSubInstances:
+  - {fileID: 114840913424061544}
+  - {fileID: 114478052636859788}
 --- !u!114 &114840913424061544
 MonoBehaviour:
   m_ObjectHideFlags: 0

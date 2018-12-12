@@ -16,8 +16,7 @@ namespace Matki.AbilityDesigner
         internal SharedVariable[] sharedVariables { get; set; }
 
         private Stack<int> m_LastList;
-
-        private string m_SaveID;
+        
         private IAbilityUser m_Originator;
         private IAbilityUser m_Target;
 
@@ -36,7 +35,6 @@ namespace Matki.AbilityDesigner
 
         internal void Cast(IAbilityUser originator, IAbilityUser target)
         {
-            m_SaveID = m_Originator.GetInstanceID() + "";
             m_Originator = originator;
             m_Target = target;
 

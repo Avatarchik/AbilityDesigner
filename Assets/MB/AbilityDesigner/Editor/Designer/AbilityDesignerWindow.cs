@@ -360,6 +360,12 @@ namespace Matki.AbilityDesigner
 
         private void OnGUI()
         {
+            Event e = Event.current;
+            if (e.isMouse && e.button == 0 && e.type == EventType.MouseDown)
+            {
+                GUI.FocusControl("");
+            }
+
             InitStyles();
 
             if (m_Ability == null)
@@ -403,6 +409,11 @@ namespace Matki.AbilityDesigner
             if (OnRepaint != null)
             {
                 OnRepaint.Invoke();
+            }
+            
+            if (e.isMouse && e.button == 0 && e.type == EventType.MouseDown)
+            {
+                Repaint();
             }
         }
 
@@ -807,7 +818,6 @@ namespace Matki.AbilityDesigner
 
         private void SharedVariablesDropdown(Rect pos)
         {
-            List<SharedVariable> variables = new List<SharedVariable>(m_Ability.sharedVariables);
             string[] guids = AssetDatabase.FindAssets("t:MonoScript");
             List<System.Type> types = new List<System.Type>();
             for (int g = 0; g < guids.Length; g++)
@@ -955,34 +965,6 @@ namespace Matki.AbilityDesigner
                 Phases.Phase currentPhase = m_Ability.phaseLists[list].phases[p];
                 GUILayout.BeginArea(new Rect(PHASELIST_XSPACING, height, width, phaseHeight), m_SelectedPhase == currentPhase ? m_PhaseSelected : m_Phase);
 
-                EditorGUI.DrawTextureTransparent(new Rect(width / 2f - 25f, 10f, 50f, 50f), EditorGUIUtility.whiteTexture);
-
-                // Title
-                string title = ObjectNames.NicifyVariableName(currentPhase.GetType().Name);
-                string customTitle = currentPhase.customTitle;
-                title = string.IsNullOrEmpty(customTitle) ? title : customTitle;
-                EditorGUI.LabelField(new Rect(0f, 60f, width, 20f), new GUIContent(title), m_PhaseTitle);
-
-                // Sub Instance Links
-                float linksHeight = (currentPhase.runForSubInstances.Length + 1) * 20f;
-                float linksWidth = width - 20f;
-                GUILayout.BeginArea(new Rect(10f, 80f, linksWidth, linksHeight), m_LineBox);
-                GUILayout.BeginArea(new Rect(1f, 1f, linksWidth - 2f, 18f), m_LineOdd);
-                EditorGUI.LabelField(new Rect(0f, 0f, linksWidth - 60f, 18f), new GUIContent("Run for Sub Instances"), m_LineText);
-                Rect setRect = new Rect(linksWidth - 51f, 0f, 50f, 17.5f);
-                if (GUI.Button(setRect, new GUIContent("Set")))
-                {
-                    LinksDropdown(setRect, list, p);
-                }
-                GUILayout.EndArea();
-                for (int l = 0; l < currentPhase.runForSubInstances.Length; l++)
-                {
-                    GUILayout.BeginArea(new Rect(1f, 19f + l * 20f, linksWidth - 2f, 20f), l % 2 == 0 ? m_LineEven : m_LineOdd);
-                    EditorGUI.LabelField(new Rect(0f, 0f, linksWidth - 2f, 18f), new GUIContent(currentPhase.runForSubInstances[l].title), m_LineText);
-                    GUILayout.EndArea();
-                }
-                GUILayout.EndArea();
-
                 // Events
                 Event e = Event.current;
                 Rect mouseRect = new Rect(0f, 0f, width, phaseHeight);
@@ -990,16 +972,8 @@ namespace Matki.AbilityDesigner
                 {
                     if (mouseRect.Contains(e.mousePosition))
                     {
-                        if (m_SelectedPhase == currentPhase)
-                        {
-                            m_SelectedPhase = null;
-                            Repaint();
-                        }
-                        else
-                        {
-                            m_SelectedPhase = currentPhase;
-                            Repaint();
-                        }
+                        m_SelectedPhase = currentPhase;
+                        Repaint();
                     }
                 }
 
@@ -1018,6 +992,35 @@ namespace Matki.AbilityDesigner
                         Repaint();
                     }
                 }
+
+                // Icon
+                EditorGUI.DrawTextureTransparent(new Rect(width / 2f - 25f, 10f, 50f, 50f), EditorGUIUtility.whiteTexture);
+
+                // Title
+                string title = ObjectNames.NicifyVariableName(currentPhase.GetType().Name);
+                string customTitle = currentPhase.customTitle;
+                title = string.IsNullOrEmpty(customTitle) ? title : customTitle;
+                EditorGUI.LabelField(new Rect(0f, 60f, width, 20f), new GUIContent(title), m_PhaseTitle);
+
+                // Sub Instance Links
+                float linksHeight = (currentPhase.runForSubInstances.Length + 1) * 20f;
+                float linksWidth = width - 20f;
+                GUILayout.BeginArea(new Rect(10f, 80f, linksWidth, linksHeight), m_LineBox);
+                GUILayout.BeginArea(new Rect(1f, 1f, linksWidth - 2f, 18f), m_LineOdd);
+                EditorGUI.LabelField(new Rect(0f, 0f, linksWidth - 60f, 18f), new GUIContent("Run for Sub Instances"), m_LineText);
+                Rect setRect = new Rect(linksWidth - 51f, -1f, 50f, 18.5f);
+                if (GUI.Button(setRect, new GUIContent("Set")))
+                {
+                    LinksDropdown(setRect, list, p);
+                }
+                GUILayout.EndArea();
+                for (int l = 0; l < currentPhase.runForSubInstances.Length; l++)
+                {
+                    GUILayout.BeginArea(new Rect(1f, 19f + l * 20f, linksWidth - 2f, 20f), l % 2 == 0 ? m_LineEven : m_LineOdd);
+                    EditorGUI.LabelField(new Rect(0f, 0f, linksWidth - 2f, 18f), new GUIContent(currentPhase.runForSubInstances[l].title), m_LineText);
+                    GUILayout.EndArea();
+                }
+                GUILayout.EndArea();
 
                 GUILayout.EndArea();
                 height += phaseHeight + PHASELIST_YSPACING;
