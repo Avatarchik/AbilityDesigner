@@ -1029,7 +1029,14 @@ namespace Matki.AbilityDesigner
             {
                 float phaseHeight = GetPhaseHeight(list, p);
                 Phases.Phase currentPhase = m_Ability.phaseLists[list].phases[p];
+
                 GUILayout.BeginArea(new Rect(PHASELIST_XSPACING, height, width, phaseHeight), m_SelectedPhase == currentPhase ? m_PhaseSelected : m_Phase);
+                GUILayout.EndArea();
+                Color backgroundColor = currentPhase.customColor;
+                backgroundColor.a = 1f;
+                GUI.backgroundColor = backgroundColor;
+                GUILayout.BeginArea(new Rect(PHASELIST_XSPACING, height, width, phaseHeight), m_Phase);
+                GUI.backgroundColor = Color.white;
 
                 // Events
                 Event e = Event.current;

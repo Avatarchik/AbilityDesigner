@@ -9,8 +9,12 @@ namespace Matki.AbilityDesigner.Phases
     public abstract class Phase : ScriptableObject
     {
         [SerializeField]
-        private string m_Title;
-        public string customTitle { get { return m_Title; } internal set { m_Title = value; } }
+        private string m_CustomTitle;
+        public string customTitle { get { return m_CustomTitle; } internal set { m_CustomTitle = value; } }
+
+        [SerializeField]
+        private Color m_CustomColor = Color.white;
+        public Color customColor { get { return m_CustomColor; } internal set { m_CustomColor = value; } }
 
         [SerializeField]
         private bool m_Instant;
