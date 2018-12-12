@@ -20,7 +20,7 @@ namespace Matki.AbilityDesigner.Phases
         public bool breakOnFail { get { return m_BreakOnFail; } internal set { m_BreakOnFail = value; } }
 
         [SerializeField]
-        private SubInstanceLink[] m_RunForSubInstances;
+        private SubInstanceLink[] m_RunForSubInstances = new SubInstanceLink[0];
         public SubInstanceLink[] runForSubInstances { get { return m_RunForSubInstances; } internal set { m_RunForSubInstances = value; } }
 
         #region Context Redirects

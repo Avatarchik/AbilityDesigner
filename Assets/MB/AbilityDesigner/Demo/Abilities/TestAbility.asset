@@ -15,23 +15,28 @@ MonoBehaviour:
   m_Description: 
   m_Icon: {fileID: 2800000, guid: 46d3fc783b13f184a8d6752d196e7d50, type: 3}
   m_CastRules:
-  - {fileID: 114089251517314888}
-  - {fileID: 114402062100035648}
+  - {fileID: 114111101265064956}
+  - {fileID: 114402381542894450}
   m_PoolingChunkSize: 0
   m_PhaseLists:
   - m_Title: Default
     m_Instant: 0
-    m_Phases: []
+    m_Phases:
+    - {fileID: 114532185720865408}
+  - m_Title: OnCollision
+    m_Instant: 0
+    m_Phases:
+    - {fileID: 114784888460511250}
+  - m_Title: OnCollision Enemies
+    m_Instant: 0
+    m_Phases:
+    - {fileID: 114326319632539178}
+    - {fileID: 114475702199491466}
   m_SubInstanceLinks:
-  - m_Foldout: 1
-    m_Title: Default
-    m_Spawn: 0
-    m_SpawnOffset: {x: 0, y: 0, z: 0}
-    m_Obj: {fileID: 1606722856494212, guid: 44f522638a6dc664290bcd5f6363380d, type: 2}
-  m_SharedVariables:
-  - {fileID: 114541811115837630}
-  - {fileID: 114400464738710966}
---- !u!114 &114089251517314888
+  - {fileID: 114478052636859788}
+  - {fileID: 114840913424061544}
+  m_SharedVariables: []
+--- !u!114 &114111101265064956
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,7 +49,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MaxCountGlobal: 0
   m_MaxCountUser: 0
---- !u!114 &114400464738710966
+--- !u!114 &114326319632539178
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -52,12 +57,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6b3f601998617b448f1b45c96cc5dee, type: 3}
+  m_Script: {fileID: 11500000, guid: 9aa254b828bb6154cb987f7897146051, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Title: 
-  m_Value: 0
---- !u!114 &114402062100035648
+  m_Instant: 0
+  m_BreakOnFail: 0
+  m_RunForSubInstances:
+  - {fileID: 114478052636859788}
+  - {fileID: 114840913424061544}
+--- !u!114 &114402381542894450
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -69,7 +78,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Cooldown: 0
---- !u!114 &114541811115837630
+--- !u!114 &114475702199491466
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -77,8 +86,76 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6b3f601998617b448f1b45c96cc5dee, type: 3}
+  m_Script: {fileID: 11500000, guid: 9aa254b828bb6154cb987f7897146051, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Title: 
-  m_Value: 0
+  m_Instant: 0
+  m_BreakOnFail: 0
+  m_RunForSubInstances:
+  - {fileID: 114478052636859788}
+  - {fileID: 114840913424061544}
+--- !u!114 &114478052636859788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b491849946162a84eb073cd8d02d8fc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Foldout: 0
+  m_Title: Origin2Target
+  m_Spawn: 0
+  m_SpawnOffset: {x: 0, y: 0, z: 0}
+  m_Obj: {fileID: 1606722856494212, guid: 44f522638a6dc664290bcd5f6363380d, type: 2}
+--- !u!114 &114532185720865408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9aa254b828bb6154cb987f7897146051, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Title: Ends the particle system
+  m_Instant: 0
+  m_BreakOnFail: 0
+  m_RunForSubInstances:
+  - {fileID: 114478052636859788}
+  - {fileID: 114840913424061544}
+--- !u!114 &114784888460511250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9aa254b828bb6154cb987f7897146051, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Title: 
+  m_Instant: 0
+  m_BreakOnFail: 0
+  m_RunForSubInstances: []
+--- !u!114 &114840913424061544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b491849946162a84eb073cd8d02d8fc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Foldout: 0
+  m_Title: Target2Origin
+  m_Spawn: 1
+  m_SpawnOffset: {x: 0, y: 0, z: 0}
+  m_Obj: {fileID: 1606722856494212, guid: 44f522638a6dc664290bcd5f6363380d, type: 2}

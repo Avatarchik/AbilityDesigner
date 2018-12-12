@@ -15,7 +15,7 @@ namespace Matki.AbilityDesigner
         public bool instant { get { return m_Instant; } internal set { m_Instant = value; } }
 
         [SerializeField]
-        private Phases.Phase[] m_Phases;
+        private Phases.Phase[] m_Phases = new Phases.Phase[0];
         internal Phases.Phase[] phases { get { return m_Phases; } set { m_Phases = value; } }
 
         private int m_CurrentPhase;
