@@ -148,7 +148,7 @@ namespace Matki.AbilityDesigner
             GUILayout.BeginVertical();
             GUI.backgroundColor = parent ? PARENT_COLOR : Color.white;
             GUILayout.BeginHorizontal(GUILayout.Height(25f));
-            GUILayout.BeginHorizontal(m_Header, GUILayout.Height(25f));
+            GUILayout.BeginHorizontal(m_Header, GUILayout.Height(25f), GUILayout.ExpandWidth(true));
             EditorGUILayout.LabelField(content, m_HeaderTitle, GUILayout.ExpandHeight(true));
             Rect rect = GUILayoutUtility.GetLastRect();
             if (GUI.Button(rect, GUIContent.none, m_HeaderTitle))
@@ -181,8 +181,8 @@ namespace Matki.AbilityDesigner
             GUILayout.BeginVertical();
             GUI.backgroundColor = parent ? PARENT_COLOR : Color.white;
             GUILayout.BeginHorizontal(GUILayout.Height(25f));
-            GUILayout.BeginHorizontal(m_Header, GUILayout.Height(25f));
-            EditorGUILayout.LabelField(content, m_HeaderTitle, GUILayout.ExpandHeight(true));
+            GUILayout.BeginHorizontal(m_Header, GUILayout.Height(25f), GUILayout.ExpandWidth(true));
+            EditorGUILayout.LabelField(content, m_HeaderTitle, GUILayout.ExpandWidth(true));
             GUILayout.EndHorizontal();
             if (buttonInfo != null)
             {
