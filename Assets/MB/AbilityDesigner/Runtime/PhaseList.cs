@@ -8,6 +8,10 @@ namespace Matki.AbilityDesigner
     public class PhaseList
     {
         [SerializeField]
+        private int m_ID;
+        internal int id { get { return m_ID; } set { m_ID = value; } }
+
+        [SerializeField]
         private string m_Title;
         public string title { get { return m_Title; } internal set { m_Title = value; } }
         [SerializeField]
@@ -19,6 +23,11 @@ namespace Matki.AbilityDesigner
         internal Phases.Phase[] phases { get { return m_Phases; } set { m_Phases = value; } }
 
         private int m_CurrentPhase;
+
+        public PhaseList(int id)
+        {
+            this.id = id;
+        }
 
         #region Phase Update
 
@@ -128,7 +137,7 @@ namespace Matki.AbilityDesigner
 
         internal PhaseList Clone()
         {
-            PhaseList clone = new PhaseList();
+            PhaseList clone = new PhaseList(id);
             clone.title = title;
             clone.instant = instant;
             clone.m_CurrentPhase = m_CurrentPhase;

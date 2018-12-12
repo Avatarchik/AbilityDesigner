@@ -14,6 +14,15 @@ namespace Matki.AbilityDesigner
         private const float PHASELIST_YSPACING = 10f;
         private const float PHASELIST_XSPACING = 20f;
 
+        private const string SUBINSTANCELINK_IDTAG_COLOR = "#15a300";
+        private static string subInstanceLink_IDColor { get { return "<color=" + SUBINSTANCELINK_IDTAG_COLOR + ">"; } }
+
+        private const string PHASELIST_IDTAG_COLOR = "#0069a2";
+        private static string phaseList_IDColor { get { return "<color=" + PHASELIST_IDTAG_COLOR + ">"; } }
+
+        private const string SHAREDVARIABLE_IDTAG_COLOR = "#c47d13";
+        private static string sharedVariable_IDColor { get { return "<color=" + SHAREDVARIABLE_IDTAG_COLOR + ">"; } }
+
         #region Structure Fields
 
         private enum Tab { General, Structure, Variables, Inspector };
@@ -77,6 +86,7 @@ namespace Matki.AbilityDesigner
 
             m_HeaderTitle = new GUIStyle("HeaderLabel");
             m_HeaderTitle.alignment = TextAnchor.MiddleLeft;
+            m_HeaderTitle.richText = true;
 
             m_HeaderButton = new GUIStyle("HeaderLabel");
             m_HeaderButton.alignment = TextAnchor.MiddleRight;
@@ -98,6 +108,7 @@ namespace Matki.AbilityDesigner
 
             m_LineText = new GUIStyle(EditorStyles.label);
             m_LineText.alignment = TextAnchor.MiddleLeft;
+            m_LineText.richText = true;
 
             m_DropArea = new GUIStyle(EditorStyles.helpBox);
             m_DropArea.alignment = TextAnchor.MiddleCenter;
@@ -635,14 +646,15 @@ namespace Matki.AbilityDesigner
 
         private void DrawPhaseList(int list, bool noButton = false)
         {
+            PhaseList currentList = m_Ability.phaseLists[list];
             // Cast Rule Area
             if (noButton)
             {
-                BeginInspectorGroup(new GUIContent(list + " " + ObjectNames.NicifyVariableName(m_Ability.phaseLists[list].title)));
+                BeginInspectorGroup(new GUIContent(phaseList_IDColor + "[" + currentList.id + "]</color> " + ObjectNames.NicifyVariableName(currentList.title)));
             }
             else
             {
-                BeginInspectorGroup(new GUIContent(list + " " + ObjectNames.NicifyVariableName(m_Ability.phaseLists[list].title)), false, new GUIContent("Delete"), delegate (Rect buttonRect)
+                BeginInspectorGroup(new GUIContent(phaseList_IDColor + "[" + currentList.id + "]</color> " + ObjectNames.NicifyVariableName(currentList.title)), false, new GUIContent("Delete"), delegate (Rect buttonRect)
                 {
                     int index = list;
                     OnRepaint = delegate ()
@@ -662,14 +674,16 @@ namespace Matki.AbilityDesigner
 
         private void DrawSubInstanceLink(int link, bool noButton = false)
         {
+            SubInstanceLink currentLink = m_Ability.subInstanceLinks[link];
+
             // Cast Rule Area
             if (noButton)
             {
-                m_Ability.subInstanceLinks[link].foldout = BeginInspectorGroupFoldable(new GUIContent(link + " " + ObjectNames.NicifyVariableName(m_Ability.subInstanceLinks[link].title)), m_Ability.subInstanceLinks[link].foldout);
+                m_Ability.subInstanceLinks[link].foldout = BeginInspectorGroupFoldable(new GUIContent(subInstanceLink_IDColor + "[" + currentLink.id + "]</color> " + ObjectNames.NicifyVariableName(currentLink.title)), m_Ability.subInstanceLinks[link].foldout);
             }
             else
             {
-                m_Ability.subInstanceLinks[link].foldout = BeginInspectorGroupFoldable(new GUIContent(link + " " + ObjectNames.NicifyVariableName(m_Ability.subInstanceLinks[link].title)), m_Ability.subInstanceLinks[link].foldout,
+                m_Ability.subInstanceLinks[link].foldout = BeginInspectorGroupFoldable(new GUIContent(subInstanceLink_IDColor + "[" + currentLink.id + "]</color> " + ObjectNames.NicifyVariableName(currentLink.title)), m_Ability.subInstanceLinks[link].foldout,
                     false, new GUIContent("Delete"), delegate (Rect buttonRect)
                 {
                     int index = link;
@@ -722,9 +736,18 @@ namespace Matki.AbilityDesigner
         private PhaseList AddPhaseList()
         {
             List<PhaseList> lists = new List<PhaseList>(m_Ability.phaseLists);
-            PhaseList list = new PhaseList();
+            int id = 0;
+            for (int l = 0; l < lists.Count; l++)
+            {
+                if (lists[l].id == id)
+                {
+                    id++;
+                }
+            }
+            PhaseList list = new PhaseList(id);
             list.title = "New List";
             lists.Add(list);
+            lists.Sort((x, y) => x.id.CompareTo(y.id));
             m_Ability.phaseLists = lists.ToArray();
             return list;
         }
@@ -732,6 +755,7 @@ namespace Matki.AbilityDesigner
         private void RemovePhaseListAt(int index)
         {
             List<PhaseList> lists = new List<PhaseList>(m_Ability.phaseLists);
+            lists[index].Destroy();
             lists.RemoveAt(index);
             m_Ability.phaseLists = lists.ToArray();
         }
@@ -739,9 +763,18 @@ namespace Matki.AbilityDesigner
         private SubInstanceLink AddSubInstanceLink()
         {
             List<SubInstanceLink> links = new List<SubInstanceLink>(m_Ability.subInstanceLinks);
-            SubInstanceLink link = CreateInstance<SubInstanceLink>();
+            int id = 0;
+            for (int l = 0; l < links.Count; l++)
+            {
+                if (links[l].id == id)
+                {
+                    id++;
+                }
+            }
+            SubInstanceLink link = SubInstanceLink.CreateInstance(id);
             link.title = "New Link";
             links.Add(link);
+            links.Sort((x, y) => x.id.CompareTo(y.id));
             m_Ability.subInstanceLinks = links.ToArray();
             AssetDatabase.AddObjectToAsset(link, m_Ability);
             return link;
@@ -754,6 +787,27 @@ namespace Matki.AbilityDesigner
             links.RemoveAt(index);
             DestroyImmediate(link, true);
             m_Ability.subInstanceLinks = links.ToArray();
+            CheckForEmptySubInstanceLinkReferences();
+        }
+
+        private void CheckForEmptySubInstanceLinkReferences()
+        {
+            List<SubInstanceLink> links = new List<SubInstanceLink>(m_Ability.subInstanceLinks);
+            for (int l = 0; l < m_Ability.phaseLists.Length; l++)
+            {
+                for (int p = 0; p < m_Ability.phaseLists[l].phases.Length; p++)
+                {
+                    List<SubInstanceLink> localLinks = new List<SubInstanceLink>(m_Ability.phaseLists[l].phases[p].runForSubInstances);
+                    for (int ll = localLinks.Count - 1; ll >= 0; ll--)
+                    {
+                        if (!links.Contains(localLinks[ll]))
+                        {
+                            localLinks.RemoveAt(ll);
+                        }
+                    }
+                    m_Ability.phaseLists[l].phases[p].runForSubInstances = localLinks.ToArray();
+                }
+            }
         }
 
         #endregion
@@ -781,14 +835,17 @@ namespace Matki.AbilityDesigner
 
         private void DrawSharedVariable(int variable, bool noButton = false)
         {
+            SharedVariable currentVariable = m_Ability.sharedVariables[variable];
             // Cast Rule Area
             if (noButton)
             {
-                BeginInspectorGroup(new GUIContent(variable + " " + m_Ability.sharedVariables[variable].GetType().Name + " " + ObjectNames.NicifyVariableName(m_Ability.sharedVariables[variable].title)));
+                BeginInspectorGroup(new GUIContent(sharedVariable_IDColor + "[" + currentVariable.id + "]</color> " + currentVariable.GetType().Name +
+                    " " + ObjectNames.NicifyVariableName(m_Ability.sharedVariables[variable].title)));
             }
             else
             {
-                BeginInspectorGroup(new GUIContent(variable + " " + m_Ability.sharedVariables[variable].GetType().Name + " " + ObjectNames.NicifyVariableName(m_Ability.sharedVariables[variable].title)), false, new GUIContent("Delete"), delegate (Rect buttonRect)
+                BeginInspectorGroup(new GUIContent(sharedVariable_IDColor + "[" + currentVariable.id + "]</color> " + currentVariable.GetType().Name +
+                    " " + ObjectNames.NicifyVariableName(m_Ability.sharedVariables[variable].title)), false, new GUIContent("Delete"), delegate (Rect buttonRect)
                 {
                     int index = variable;
                     OnRepaint = delegate ()
@@ -842,8 +899,17 @@ namespace Matki.AbilityDesigner
         {
             System.Type type = (System.Type)obj;
             List<SharedVariable> variables = new List<SharedVariable>(m_Ability.sharedVariables);
-            SharedVariable variable = (SharedVariable)CreateInstance(type);
+            int id = 0;
+            for (int l = 0; l < variables.Count; l++)
+            {
+                if (variables[l].id == id)
+                {
+                    id++;
+                }
+            }
+            SharedVariable variable = SharedVariable.CreateInstance(type, id);
             variables.Add(variable);
+            variables.Sort((x, y) => x.id.CompareTo(y.id));
             m_Ability.sharedVariables = variables.ToArray();
             AssetDatabase.AddObjectToAsset(variable, m_Ability);
         }
@@ -1017,7 +1083,8 @@ namespace Matki.AbilityDesigner
                 for (int l = 0; l < currentPhase.runForSubInstances.Length; l++)
                 {
                     GUILayout.BeginArea(new Rect(1f, 19f + l * 20f, linksWidth - 2f, 20f), l % 2 == 0 ? m_LineEven : m_LineOdd);
-                    EditorGUI.LabelField(new Rect(0f, 0f, linksWidth - 2f, 18f), new GUIContent(currentPhase.runForSubInstances[l].title), m_LineText);
+                    EditorGUI.LabelField(new Rect(0f, 0f, linksWidth - 2f, 18f), new GUIContent(subInstanceLink_IDColor + "<b>[" + currentPhase.runForSubInstances[l].id + "]</b></color> " +
+                        ObjectNames.NicifyVariableName(currentPhase.runForSubInstances[l].title)), m_LineText);
                     GUILayout.EndArea();
                 }
                 GUILayout.EndArea();
@@ -1048,7 +1115,7 @@ namespace Matki.AbilityDesigner
             {
                 SubInstanceLink link = links[l];
                 bool active = activeLinks.Contains(links[l]);
-                menu.AddItem(new GUIContent(l + " " + links[l].title), active, delegate ()
+                menu.AddItem(new GUIContent("[" + links[l].id + "] " + links[l].title), active, delegate ()
                 {
                     if (active)
                     {
@@ -1076,6 +1143,7 @@ namespace Matki.AbilityDesigner
         {
             List<SubInstanceLink> links = new List<SubInstanceLink>(m_Ability.phaseLists[list].phases[phase].runForSubInstances);
             links.Add(link);
+            links.Sort((x, y) => x.id.CompareTo(y.id));
             m_Ability.phaseLists[list].phases[phase].runForSubInstances = links.ToArray();
         }
 

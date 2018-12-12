@@ -18,6 +18,10 @@ namespace Matki.AbilityDesigner
         #endif
 
         [SerializeField]
+        private int m_ID;
+        internal int id { get { return m_ID; } set { m_ID = value; } }
+
+        [SerializeField]
         private string m_Title;
         public string title { get { return m_Title; } internal set { m_Title = value; } }
 
@@ -60,6 +64,13 @@ namespace Matki.AbilityDesigner
             collider = obj.GetComponent<Collider>();
             meshFilter = obj.GetComponent<MeshFilter>();
             meshRenderer = obj.GetComponent<MeshRenderer>();
+        }
+
+        internal static SubInstanceLink CreateInstance(int id)
+        {
+            SubInstanceLink link = CreateInstance<SubInstanceLink>();
+            link.id = id;
+            return link;
         }
     }
 }
