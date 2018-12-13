@@ -19,6 +19,6 @@ MonoBehaviour:
   m_InspectorWidth: 320
   m_PhaseListWidth: 300
   m_PhaseListSpacing: {x: 20, y: 10}
-  m_PhaseTitleHeight: 80
-  m_PhaseSpacing: 10
+  m_PhaseTitleHeight: 60
+  m_PhaseSpacing: 7
   m_PhaseIconLayout: 0
