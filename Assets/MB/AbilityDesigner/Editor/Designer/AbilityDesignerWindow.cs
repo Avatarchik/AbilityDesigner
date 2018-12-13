@@ -3,25 +3,82 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace Matki.AbilityDesigner
+namespace Matki.AbilityDesigner.Edit
 {
     public class AbilityDesignerWindow : EditorWindow
     {
-        private const float INSPECTOR_WIDTH = 320f;
         private static Color PARENT_COLOR = new Color(0.7f, 0.7f, 0.7f);
 
-        private const float PHASELIST_WIDTH = 300f;
-        private const float PHASELIST_YSPACING = 10f;
-        private const float PHASELIST_XSPACING = 20f;
+        #region Skin Redirects
 
-        private const string SUBINSTANCELINK_IDTAG_COLOR = "#15a300";
-        private static string subInstanceLink_IDColor { get { return "<color=" + SUBINSTANCELINK_IDTAG_COLOR + ">"; } }
+        private static float INSPECTOR_WIDTH
+        {
+            get
+            {
+                return EditorSettings.INSTANCE.editorSkin.inspectorWidth;
+            }
+        }
 
-        private const string PHASELIST_IDTAG_COLOR = "#0069a2";
-        private static string phaseList_IDColor { get { return "<color=" + PHASELIST_IDTAG_COLOR + ">"; } }
+        private static float PHASELIST_WIDTH
+        {
+            get
+            {
+                return EditorSettings.INSTANCE.editorSkin.phaseListWidth;
+            }
+        }
+        private static Vector2 PHASELIST_SPACING
+        {
+            get
+            {
+                return EditorSettings.INSTANCE.editorSkin.phaseListSpacing;
+            }
+        }
 
-        private const string SHAREDVARIABLE_IDTAG_COLOR = "#c47d13";
-        private static string sharedVariable_IDColor { get { return "<color=" + SHAREDVARIABLE_IDTAG_COLOR + ">"; } }
+        private static string SUBINSTANCELINK_COLOR
+        {
+            get
+            {
+                return "<color=#" + ColorUtility.ToHtmlStringRGB(EditorSettings.INSTANCE.editorSkin.subInstanceLink_Color) + ">";
+            }
+        }
+        private static string PHASELIST_COLOR
+        {
+            get
+            {
+                return "<color=#" + ColorUtility.ToHtmlStringRGB(EditorSettings.INSTANCE.editorSkin.phaseList_Color) + ">";
+            }
+        }
+        private static string SHAREDVARIABLE_COLOR
+        {
+            get
+            {
+                return "<color=#" + ColorUtility.ToHtmlStringRGB(EditorSettings.INSTANCE.editorSkin.sharedVariable_Color) + ">";
+            }
+        }
+
+        private static float PHASETITLE_HEIGHT
+        {
+            get
+            {
+                return EditorSettings.INSTANCE.editorSkin.phaseTitleHeight;
+            }
+        }
+        private static float PHASE_SPACING
+        {
+            get
+            {
+                return EditorSettings.INSTANCE.editorSkin.phaseSpacing;
+            }
+        }
+        private static EditorSkin.PhaseIconLayout PHASEICON_LAYOUT
+        {
+            get
+            {
+                return EditorSettings.INSTANCE.editorSkin.phaseIconLayout;
+            }
+        }
+
+        #endregion
 
         #region Structure Fields
 
@@ -346,6 +403,11 @@ namespace Matki.AbilityDesigner
             OnSelectionChange();
         }
 
+        private void OnLostFocus()
+        {
+            m_SelectedPhase = null;
+        }
+
         private void OnSelectionChange()
         {
             Ability[] selectedAbilities = Selection.GetFiltered<Ability>(SelectionMode.Assets);
@@ -366,6 +428,7 @@ namespace Matki.AbilityDesigner
                 Repaint();
             }
 
+            m_SelectedPhase = null;
             m_EditorHeight = GetMaxHeight();
         }
 
@@ -426,6 +489,14 @@ namespace Matki.AbilityDesigner
             {
                 Repaint();
             }
+        }
+
+        internal static void OrderSkinChange()
+        {
+            AbilityDesignerWindow window = GetWindow<AbilityDesignerWindow>();
+            window.Focus();
+            window.m_StylesInitialized = false;
+            window.Repaint();
         }
 
         #endregion
@@ -650,11 +721,11 @@ namespace Matki.AbilityDesigner
             // Cast Rule Area
             if (noButton)
             {
-                BeginInspectorGroup(new GUIContent(phaseList_IDColor + "[" + currentList.id + "]</color> " + ObjectNames.NicifyVariableName(currentList.title)));
+                BeginInspectorGroup(new GUIContent(PHASELIST_COLOR + "[" + currentList.id + "]</color> " + ObjectNames.NicifyVariableName(currentList.title)));
             }
             else
             {
-                BeginInspectorGroup(new GUIContent(phaseList_IDColor + "[" + currentList.id + "]</color> " + ObjectNames.NicifyVariableName(currentList.title)), false, new GUIContent("Delete"), delegate (Rect buttonRect)
+                BeginInspectorGroup(new GUIContent(PHASELIST_COLOR + "[" + currentList.id + "]</color> " + ObjectNames.NicifyVariableName(currentList.title)), false, new GUIContent("Delete"), delegate (Rect buttonRect)
                 {
                     int index = list;
                     OnRepaint = delegate ()
@@ -679,11 +750,11 @@ namespace Matki.AbilityDesigner
             // Cast Rule Area
             if (noButton)
             {
-                m_Ability.subInstanceLinks[link].foldout = BeginInspectorGroupFoldable(new GUIContent(subInstanceLink_IDColor + "[" + currentLink.id + "]</color> " + ObjectNames.NicifyVariableName(currentLink.title)), m_Ability.subInstanceLinks[link].foldout);
+                m_Ability.subInstanceLinks[link].foldout = BeginInspectorGroupFoldable(new GUIContent(SUBINSTANCELINK_COLOR + "[" + currentLink.id + "]</color> " + ObjectNames.NicifyVariableName(currentLink.title)), m_Ability.subInstanceLinks[link].foldout);
             }
             else
             {
-                m_Ability.subInstanceLinks[link].foldout = BeginInspectorGroupFoldable(new GUIContent(subInstanceLink_IDColor + "[" + currentLink.id + "]</color> " + ObjectNames.NicifyVariableName(currentLink.title)), m_Ability.subInstanceLinks[link].foldout,
+                m_Ability.subInstanceLinks[link].foldout = BeginInspectorGroupFoldable(new GUIContent(SUBINSTANCELINK_COLOR + "[" + currentLink.id + "]</color> " + ObjectNames.NicifyVariableName(currentLink.title)), m_Ability.subInstanceLinks[link].foldout,
                     false, new GUIContent("Delete"), delegate (Rect buttonRect)
                 {
                     int index = link;
@@ -839,12 +910,12 @@ namespace Matki.AbilityDesigner
             // Cast Rule Area
             if (noButton)
             {
-                BeginInspectorGroup(new GUIContent(sharedVariable_IDColor + "[" + currentVariable.id + "]</color> " + currentVariable.GetType().Name +
+                BeginInspectorGroup(new GUIContent(SHAREDVARIABLE_COLOR + "[" + currentVariable.id + "]</color> " + currentVariable.GetType().Name +
                     " " + ObjectNames.NicifyVariableName(m_Ability.sharedVariables[variable].title)));
             }
             else
             {
-                BeginInspectorGroup(new GUIContent(sharedVariable_IDColor + "[" + currentVariable.id + "]</color> " + currentVariable.GetType().Name +
+                BeginInspectorGroup(new GUIContent(SHAREDVARIABLE_COLOR + "[" + currentVariable.id + "]</color> " + currentVariable.GetType().Name +
                     " " + ObjectNames.NicifyVariableName(m_Ability.sharedVariables[variable].title)), false, new GUIContent("Delete"), delegate (Rect buttonRect)
                 {
                     int index = variable;
@@ -982,7 +1053,7 @@ namespace Matki.AbilityDesigner
                 }
             }
 
-            float viewWidth = 20f + (PHASELIST_WIDTH + PHASELIST_XSPACING) * m_Ability.phaseLists.Length;
+            float viewWidth = 20f + (PHASELIST_WIDTH + PHASELIST_SPACING.x) * m_Ability.phaseLists.Length;
             m_EditorScroll = GUI.BeginScrollView(rect, m_EditorScroll, new Rect(0f, 0f, viewWidth, m_EditorHeight + 40f), true, true);
 
             EditorGUI.BeginChangeCheck();
@@ -990,9 +1061,9 @@ namespace Matki.AbilityDesigner
             for (int l = 0; l < m_Ability.phaseLists.Length; l++)
             {
                 float listHeight = GetListHeight(l);
-                Rect listRect = new Rect((PHASELIST_WIDTH + PHASELIST_XSPACING) * l, 20f, PHASELIST_WIDTH + PHASELIST_XSPACING * 2f, listHeight);
+                Rect listRect = new Rect((PHASELIST_WIDTH + PHASELIST_SPACING.x) * l, 20f, PHASELIST_WIDTH + PHASELIST_SPACING.x * 2f, listHeight);
                 GUILayout.BeginArea(listRect);
-                DrawPhaseList(new Rect(PHASELIST_XSPACING, 20f, listRect.width - PHASELIST_XSPACING * 2f, listRect.height), l);
+                DrawPhaseList(new Rect(PHASELIST_SPACING.x, 20f, listRect.width - PHASELIST_SPACING.x * 2f, listRect.height), l);
                 GUILayout.EndArea();
             }
 
@@ -1016,26 +1087,26 @@ namespace Matki.AbilityDesigner
         {
             float width = rect.width;
 
-            Vector2 startPos = new Vector2(PHASELIST_XSPACING + rect.width / 2f, 0f);
-            Vector2 endPos = new Vector2(PHASELIST_XSPACING + rect.width / 2f, rect.height - 40f);
+            Vector2 startPos = new Vector2(PHASELIST_SPACING.x + rect.width / 2f, 0f);
+            Vector2 endPos = new Vector2(PHASELIST_SPACING.x + rect.width / 2f, rect.height - 40f);
             DrawLineThick(startPos, endPos, new Color(0.1f, 0.1f, 0.1f, 0.8f), 4f);
 
-            GUILayout.BeginArea(new Rect(PHASELIST_XSPACING, 0f, width, 40f), m_Phase);
+            GUILayout.BeginArea(new Rect(PHASELIST_SPACING.x, 0f, width, 40f), m_Phase);
             EditorGUILayout.LabelField(new GUIContent(list + " " + m_Ability.phaseLists[list].title), m_ListTitle, GUILayout.ExpandHeight(true));
             GUILayout.EndArea();
 
-            float height = 40f + PHASELIST_YSPACING;
+            float height = 40f + PHASELIST_SPACING.y;
             for (int p = 0; p < m_Ability.phaseLists[list].phases.Length; p++)
             {
                 float phaseHeight = GetPhaseHeight(list, p);
                 Phases.Phase currentPhase = m_Ability.phaseLists[list].phases[p];
 
-                GUILayout.BeginArea(new Rect(PHASELIST_XSPACING, height, width, phaseHeight), m_SelectedPhase == currentPhase ? m_PhaseSelected : m_Phase);
+                GUILayout.BeginArea(new Rect(PHASELIST_SPACING.x, height, width, phaseHeight), m_SelectedPhase == currentPhase ? m_PhaseSelected : m_Phase);
                 GUILayout.EndArea();
                 Color backgroundColor = currentPhase.customColor;
                 backgroundColor.a = 1f;
                 GUI.backgroundColor = backgroundColor;
-                GUILayout.BeginArea(new Rect(PHASELIST_XSPACING, height, width, phaseHeight), m_Phase);
+                GUILayout.BeginArea(new Rect(PHASELIST_SPACING.x, height, width, phaseHeight), m_Phase);
                 GUI.backgroundColor = Color.white;
 
                 // Events
@@ -1066,19 +1137,39 @@ namespace Matki.AbilityDesigner
                     }
                 }
 
+                Rect iconRect = rect;
+                Rect titleRect = rect;
+                float iconHeight = PHASETITLE_HEIGHT;
+                switch (PHASEICON_LAYOUT)
+                {
+                    case EditorSkin.PhaseIconLayout.Centered:
+                        iconHeight = PHASETITLE_HEIGHT - 30f;
+                        iconRect = new Rect(width / 2f - iconHeight / 2f, PHASE_SPACING, iconHeight, iconHeight);
+                        titleRect = new Rect(0f, iconHeight + PHASE_SPACING * 2f, width, 20f);
+                        break;
+                    case EditorSkin.PhaseIconLayout.Flat:
+                        iconRect = new Rect(PHASE_SPACING, PHASE_SPACING, PHASETITLE_HEIGHT, PHASETITLE_HEIGHT);
+                        titleRect = new Rect(PHASETITLE_HEIGHT + PHASE_SPACING, PHASE_SPACING, width - PHASETITLE_HEIGHT - PHASE_SPACING * 2f, PHASETITLE_HEIGHT);
+                        break;
+                    case EditorSkin.PhaseIconLayout.NoIcon:
+                        iconRect = new Rect(PHASE_SPACING, PHASE_SPACING, 0f, 0f);
+                        titleRect = new Rect(PHASE_SPACING, PHASE_SPACING, width - PHASE_SPACING * 2f, PHASETITLE_HEIGHT);
+                        break;
+                }
+
                 // Icon
-                EditorGUI.DrawTextureTransparent(new Rect(width / 2f - 25f, 10f, 50f, 50f), EditorGUIUtility.whiteTexture);
+                EditorGUI.DrawTextureTransparent(iconRect, EditorGUIUtility.whiteTexture);
 
                 // Title
                 string title = ObjectNames.NicifyVariableName(currentPhase.GetType().Name);
                 string customTitle = currentPhase.customTitle;
                 title = string.IsNullOrEmpty(customTitle) ? title : customTitle;
-                EditorGUI.LabelField(new Rect(0f, 60f, width, 20f), new GUIContent(title), m_PhaseTitle);
+                EditorGUI.LabelField(titleRect, new GUIContent(title), m_PhaseTitle);
 
                 // Sub Instance Links
                 float linksHeight = (currentPhase.runForSubInstances.Length + 1) * 20f;
-                float linksWidth = width - 20f;
-                GUILayout.BeginArea(new Rect(10f, 80f, linksWidth, linksHeight), m_LineBox);
+                float linksWidth = width - PHASE_SPACING * 2f;
+                GUILayout.BeginArea(new Rect(PHASE_SPACING, PHASETITLE_HEIGHT + PHASE_SPACING * 2f, linksWidth, linksHeight), m_LineBox);
                 GUILayout.BeginArea(new Rect(1f, 1f, linksWidth - 2f, 18f), m_LineOdd);
                 EditorGUI.LabelField(new Rect(0f, 0f, linksWidth - 60f, 18f), new GUIContent("Run for Sub Instances"), m_LineText);
                 Rect setRect = new Rect(linksWidth - 51f, -1f, 50f, 18.5f);
@@ -1090,17 +1181,17 @@ namespace Matki.AbilityDesigner
                 for (int l = 0; l < currentPhase.runForSubInstances.Length; l++)
                 {
                     GUILayout.BeginArea(new Rect(1f, 19f + l * 20f, linksWidth - 2f, 20f), l % 2 == 0 ? m_LineEven : m_LineOdd);
-                    EditorGUI.LabelField(new Rect(0f, 0f, linksWidth - 2f, 18f), new GUIContent(subInstanceLink_IDColor + "<b>[" + currentPhase.runForSubInstances[l].id + "]</b></color> " +
+                    EditorGUI.LabelField(new Rect(0f, 0f, linksWidth - 2f, 18f), new GUIContent(SUBINSTANCELINK_COLOR + "<b>[" + currentPhase.runForSubInstances[l].id + "]</b></color> " +
                         ObjectNames.NicifyVariableName(currentPhase.runForSubInstances[l].title)), m_LineText);
                     GUILayout.EndArea();
                 }
                 GUILayout.EndArea();
 
                 GUILayout.EndArea();
-                height += phaseHeight + PHASELIST_YSPACING;
+                height += phaseHeight + PHASELIST_SPACING.y;
             }
 
-            Rect buttonRect = new Rect(PHASELIST_XSPACING + rect.width / 2f - 50f, rect.height - 40f, 100f, 40f);
+            Rect buttonRect = new Rect(PHASELIST_SPACING.x + rect.width / 2f - 50f, rect.height - 40f, 100f, 40f);
             if (GUI.Button(buttonRect, new GUIContent("Add"), m_AddButton))
             {
                 PhasesDropdown(buttonRect, list);
@@ -1225,13 +1316,13 @@ namespace Matki.AbilityDesigner
 
         float GetListHeight(int list)
         {
-            float height = 80f + PHASELIST_YSPACING * 2f;
+            float height = 80f + PHASELIST_SPACING.y * 2f;
             for (int p = 0; p < m_Ability.phaseLists[list].phases.Length; p++)
             {
                 height += GetPhaseHeight(list, p);
-                if (p < m_Ability.phaseLists[list].phases.Length - 1)
+                if (p <= m_Ability.phaseLists[list].phases.Length - 1)
                 {
-                    height += PHASELIST_YSPACING;
+                    height += PHASELIST_SPACING.y;
                 }
             }
             return height;
@@ -1239,7 +1330,7 @@ namespace Matki.AbilityDesigner
 
         float GetPhaseHeight(int list, int phase)
         {
-            float height = 90f;
+            float height = PHASETITLE_HEIGHT + PHASE_SPACING * 3f;
             height += (m_Ability.phaseLists[list].phases[phase].runForSubInstances.Length + 1) * 20f;
             return height;
         }
