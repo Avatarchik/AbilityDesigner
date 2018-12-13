@@ -193,7 +193,7 @@ namespace Matki.AbilityDesigner
             GUI.backgroundColor = parent ? PARENT_COLOR : Color.white;
             GUILayout.BeginHorizontal(GUILayout.Height(25f));
             GUILayout.BeginHorizontal(m_Header, GUILayout.Height(25f), GUILayout.ExpandWidth(true));
-            EditorGUILayout.LabelField(content, m_HeaderTitle, GUILayout.ExpandWidth(true));
+            EditorGUILayout.LabelField(content, m_HeaderTitle, GUILayout.ExpandHeight(true));
             GUILayout.EndHorizontal();
             if (buttonInfo != null)
             {

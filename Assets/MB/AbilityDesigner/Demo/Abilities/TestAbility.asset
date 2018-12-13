@@ -11,11 +11,143 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8eac2f8ab9cb3748975743172d92a4d, type: 3}
   m_Name: TestAbility
   m_EditorClassIdentifier: 
-  m_Title: 
-  m_Description: 
-  m_Icon: {fileID: 0}
-  m_CastRules: []
-  m_PoolingChunkSize: 0
-  m_PhaseLists: []
-  m_SubInstanceLinks: []
+  m_Title: Title
+  m_Description: Description
+  m_Icon: {fileID: 2800000, guid: 46d3fc783b13f184a8d6752d196e7d50, type: 3}
+  m_CastRules:
+  - {fileID: 114933140738013766}
+  - {fileID: 114506292347338920}
+  m_PoolingChunkSize: 10
+  m_PhaseLists:
+  - m_ID: 0
+    m_Title: Default
+    m_Instant: 0
+    m_Phases:
+    - {fileID: 114956108904029186}
+  - m_ID: 1
+    m_Title: OnCollision
+    m_Instant: 0
+    m_Phases: []
+  - m_ID: 2
+    m_Title: OnCollision Enemies
+    m_Instant: 0
+    m_Phases:
+    - {fileID: 114490438653277798}
+    - {fileID: 114041719135437576}
+  m_SubInstanceLinks:
+  - {fileID: 114770828382592838}
+  - {fileID: 114647311734338600}
   m_SharedVariables: []
+--- !u!114 &114041719135437576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9aa254b828bb6154cb987f7897146051, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CustomTitle: 
+  m_CustomColor: {r: 1, g: 1, b: 1, a: 1}
+  m_Instant: 0
+  m_BreakOnFail: 0
+  m_RunForSubInstances:
+  - {fileID: 114770828382592838}
+  - {fileID: 114647311734338600}
+--- !u!114 &114490438653277798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9aa254b828bb6154cb987f7897146051, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CustomTitle: 
+  m_CustomColor: {r: 1, g: 1, b: 1, a: 1}
+  m_Instant: 0
+  m_BreakOnFail: 0
+  m_RunForSubInstances:
+  - {fileID: 114770828382592838}
+  - {fileID: 114647311734338600}
+--- !u!114 &114506292347338920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28ec07ebd22933c4c85fb81027d91bcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Cooldown: 5
+--- !u!114 &114647311734338600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b491849946162a84eb073cd8d02d8fc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Foldout: 0
+  m_ID: 1
+  m_Title: Target2Origin
+  m_Spawn: 1
+  m_SpawnOffset: {x: 0, y: 0, z: 0}
+  m_Obj: {fileID: 1606722856494212, guid: 44f522638a6dc664290bcd5f6363380d, type: 2}
+--- !u!114 &114770828382592838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b491849946162a84eb073cd8d02d8fc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Foldout: 0
+  m_ID: 0
+  m_Title: Origin2Target
+  m_Spawn: 0
+  m_SpawnOffset: {x: 0, y: 0, z: 0}
+  m_Obj: {fileID: 1606722856494212, guid: 44f522638a6dc664290bcd5f6363380d, type: 2}
+--- !u!114 &114933140738013766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb52a317431982d4fbd574049d598b66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MaxCountGlobal: 1
+  m_MaxCountUser: 1
+--- !u!114 &114956108904029186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9aa254b828bb6154cb987f7897146051, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CustomTitle: 
+  m_CustomColor: {r: 1, g: 1, b: 1, a: 1}
+  m_Instant: 0
+  m_BreakOnFail: 0
+  m_RunForSubInstances:
+  - {fileID: 114770828382592838}
+  - {fileID: 114647311734338600}
