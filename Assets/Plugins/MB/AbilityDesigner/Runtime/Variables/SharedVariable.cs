@@ -19,6 +19,8 @@ namespace Matki.AbilityDesigner
 
         internal static SharedVariable CreateInstance(System.Type type, int id)
         {
+            string typeString = type.ToString();
+            System.Type newType = System.Type.GetType(typeString);
             SharedVariable variable = (SharedVariable)CreateInstance(type);
             variable.id = id;
             return variable;

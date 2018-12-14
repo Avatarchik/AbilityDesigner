@@ -37,7 +37,23 @@ MonoBehaviour:
   m_SubInstanceLinks:
   - {fileID: 114770828382592838}
   - {fileID: 114647311734338600}
-  m_SharedVariables: []
+  m_SharedVariables:
+  - {fileID: 114034526887346898}
+  - {fileID: 114371185701479850}
+--- !u!114 &114034526887346898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6b3f601998617b448f1b45c96cc5dee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ID: 0
+  m_Title: TestValue
+  m_Value: 0
 --- !u!114 &114041719135437576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56,6 +72,27 @@ MonoBehaviour:
   m_RunForSubInstances:
   - {fileID: 114770828382592838}
   - {fileID: 114647311734338600}
+  m_Value: 0
+  m_Value1: 
+  m_Value2: 0
+  m_IntValue: {fileID: 114034526887346898}
+  m_IntValue2: {fileID: 0}
+  m_IntValue3: {fileID: 0}
+  m_IntValue4: {fileID: 0}
+--- !u!114 &114371185701479850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6b3f601998617b448f1b45c96cc5dee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ID: 1
+  m_Title: ThisValue
+  m_Value: 0
 --- !u!114 &114490438653277798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,6 +111,13 @@ MonoBehaviour:
   m_RunForSubInstances:
   - {fileID: 114770828382592838}
   - {fileID: 114647311734338600}
+  m_Value: 0
+  m_Value1: 
+  m_Value2: 0
+  m_IntValue: {fileID: 114034526887346898}
+  m_IntValue2: {fileID: 0}
+  m_IntValue3: {fileID: 0}
+  m_IntValue4: {fileID: 0}
 --- !u!114 &114506292347338920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,3 +195,10 @@ MonoBehaviour:
   m_RunForSubInstances:
   - {fileID: 114770828382592838}
   - {fileID: 114647311734338600}
+  m_Value: 0
+  m_Value1: 3
+  m_Value2: 5
+  m_IntValue: {fileID: 114034526887346898}
+  m_IntValue2: {fileID: 114371185701479850}
+  m_IntValue3: {fileID: 114371185701479850}
+  m_IntValue4: {fileID: 114034526887346898}

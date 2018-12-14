@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System.Reflection;
 
 namespace Matki.AbilityDesigner.Edit
 {
@@ -119,6 +120,8 @@ namespace Matki.AbilityDesigner.Edit
         GUIStyle m_PhaseTitle, m_ListTitle;
         GUIStyle m_AddButton;
 
+        GUIStyle m_SharedVariablePopup, m_SharedVariableToggle;
+
         private void InitStyles()
         {
             if (m_StylesInitialized)
@@ -203,6 +206,16 @@ namespace Matki.AbilityDesigner.Edit
             m_ListTitle.alignment = TextAnchor.MiddleCenter;
             m_ListTitle.fontSize = 14;
             m_ListTitle.fontStyle = FontStyle.Bold;
+
+            m_SharedVariablePopup = new GUIStyle("ToolbarPopup");// "Popup");
+            m_SharedVariablePopup.padding = new RectOffset(8, 8, 0, 0);
+            m_SharedVariablePopup.richText = true;
+
+            m_SharedVariableToggle = new GUIStyle("toolbarbutton");// "Radio");
+            m_SharedVariableToggle.alignment = TextAnchor.MiddleCenter;
+            m_SharedVariableToggle.padding = new RectOffset(0, 0, 0, 0);
+            m_SharedVariableToggle.richText = true;
+            m_SharedVariableToggle.fixedWidth = 0f;
 
             m_StylesInitialized = true;
         }
@@ -1009,15 +1022,144 @@ namespace Matki.AbilityDesigner.Edit
             if (m_SelectedPhase != null)
             {
                 // TODO: reflective editor
+                ReflectiveEditor(m_SelectedPhase);
+                /*
                 Editor editor = Editor.CreateEditor(m_SelectedPhase);
                 editor.DrawDefaultInspector();
-                DestroyImmediate(editor);
+                DestroyImmediate(editor);*/
             }
 
             EditorGUILayout.EndVertical();
             GUILayout.Space(5f);
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndScrollView();
+        }
+
+        [System.NonSerialized]
+        Phases.Phase m_CachedPhase;
+        [System.NonSerialized]
+        FieldInfo[] m_CachedFields;
+
+        void ReflectiveEditor(Phases.Phase target)
+        {
+            if (target != m_CachedPhase)
+            {
+                m_CachedPhase = target;
+                FieldInfo[]  cachedFields = target.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                List<FieldInfo> cachedFieldList = new List<FieldInfo>();
+                for (int f = 0; f < cachedFields.Length; f++)
+                {
+                    SerializeField attribute = cachedFields[f].GetCustomAttribute<SerializeField>(false);
+                    if (attribute != null)
+                    {
+                        cachedFieldList.Add(cachedFields[f]);
+                        continue;
+                    }
+                    if (cachedFields[f].IsPublic)
+                    {
+                        cachedFieldList.Add(cachedFields[f]);
+                        continue;
+                    }
+                }
+                m_CachedFields = cachedFieldList.ToArray();
+            }
+
+            GUILayout.BeginVertical(EditorStyles.helpBox);
+            target.customTitle = EditorGUILayout.TextField(new GUIContent("Custom Title"), target.customTitle);
+            target.customColor = EditorGUILayout.ColorField(new GUIContent("Custom Color"), target.customColor);
+            GUILayout.EndVertical();
+
+            SerializedObject serializedObject = new SerializedObject(target);
+            
+            for (int f = 0; f < m_CachedFields.Length; f++)
+            {
+                if (m_CachedFields[f].FieldType.IsSubclassOf(typeof(SharedVariable)))
+                {
+                    DrawSharedVariableProperty(m_CachedFields[f]);
+                    continue;
+                }
+
+                // Drau default property
+                SerializedProperty property = serializedObject.FindProperty(m_CachedFields[f].Name);
+                EditorGUILayout.PropertyField(property);
+                serializedObject.ApplyModifiedProperties();
+            }
+        }
+
+        private void HandleAttributes(FieldInfo info)
+        {
+            HeaderAttribute headerAttribute = info.GetCustomAttribute<HeaderAttribute>(false);
+            if (headerAttribute != null)
+            {
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField(new GUIContent(headerAttribute.header), EditorStyles.boldLabel);
+            }
+        }
+
+        private void DrawSharedVariableProperty(FieldInfo info)
+        {
+            HandleAttributes(info);
+            GUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel(ObjectNames.NicifyVariableName(info.Name));
+
+            bool linked = false;
+            SharedVariable variable = (SharedVariable)info.GetValue(m_CachedPhase);
+            List<SharedVariable> variables = new List<SharedVariable>(m_Ability.sharedVariables);
+            if (variable == null || variables.Contains(variable))
+            {
+                linked = true;
+            }
+
+            if (linked)
+            {
+                GUIContent content = new GUIContent(variable == null ? "none" : (SHAREDVARIABLE_COLOR + "<b>[" + variable.id + "]</b></color> " + variable.title));
+                Rect rect = GUILayoutUtility.GetRect(content, m_SharedVariablePopup);
+                GUI.backgroundColor = variable == null ? Color.red : Color.white;
+                if (GUI.Button(rect, content, m_SharedVariablePopup))
+                {
+                    SharedVariableDropdown(rect, info, m_CachedPhase);
+                }
+                GUI.backgroundColor = Color.white;
+            }
+            else
+            {
+                SerializedObject serializedObject = new SerializedObject(variable);
+                SerializedProperty property = serializedObject.FindProperty("m_Value");
+                EditorGUILayout.PropertyField(property, GUIContent.none);
+                serializedObject.ApplyModifiedProperties();
+            }
+
+            if (GUILayout.Button(new GUIContent("▶"), m_SharedVariableToggle, GUILayout.Width(20f)))
+            {
+                if (linked)
+                {
+                    SharedVariable newVariable = SharedVariable.CreateInstance(info.FieldType, -1);
+                    AssetDatabase.AddObjectToAsset(newVariable, m_Ability);
+                    info.SetValue(m_CachedPhase, newVariable);
+                }
+                else
+                {
+                    DestroyImmediate(variable, true);
+                    info.SetValue(m_CachedPhase, null);
+                }
+            }
+            GUILayout.EndHorizontal();
+        }
+
+        public void SharedVariableDropdown(Rect pos, FieldInfo value, Phases.Phase target)
+        {
+            GenericMenu menu = new GenericMenu();
+            menu.AddItem(new GUIContent("(none)"), value.GetValue(target) == null, delegate () { value.SetValue(target, null); });
+            for (int s = 0; s < m_Ability.sharedVariables.Length; s++)
+            {
+                if (m_Ability.sharedVariables[s].GetType() == value.FieldType)
+                {
+                    SharedVariable variable = m_Ability.sharedVariables[s];
+                    SharedVariable targetVar = (SharedVariable)value.GetValue(target);
+                    menu.AddItem(new GUIContent("[" + variable.id + "] " + variable.title), targetVar == variable, delegate() { value.SetValue(target, variable); });
+                }
+            }
+            menu.DropDown(pos);
         }
 
         #endregion
