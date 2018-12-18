@@ -6,9 +6,13 @@ namespace Matki.AbilityDesigner
 {
     public class AbilityInstanceManager : MonoBehaviour
     {
-        public Ability ability { get; internal set; }
+        [SerializeField]
+        private Ability m_Ability;
+        public Ability ability { get { return m_Ability; } internal set { m_Ability = value; } }
 
-        public Vector3 poolPostion { get; internal set; }
+        [SerializeField]
+        private Vector3 m_PoolPosition;
+        public Vector3 poolPostion { get { return m_PoolPosition; } internal set { m_PoolPosition = value; } }
 
         private AbilityInstance[] m_AbilityInstances = new AbilityInstance[0];
         private List<AbilityInstance> m_OccupiedInstances = new List<AbilityInstance>();
@@ -19,6 +23,20 @@ namespace Matki.AbilityDesigner
         private void Awake()
         {
             ability.instanceManager = this;
+        }
+
+        private void Start()
+        {
+            ExpandCache(ability.poolingChunkSize);
+        }
+
+        public float GetCooldown(string id)
+        {
+            if (!m_Cooldowns.ContainsKey(id))
+            {
+                return 0f;
+            }
+            return m_Cooldowns[id];
         }
 
         public bool IsCastLegitimate(string id)
@@ -79,6 +97,7 @@ namespace Matki.AbilityDesigner
                         m_Cooldowns[id] = value;
                     }
 
+                    m_AbilityInstances[i].gameObject.SetActive(true);
                     return m_AbilityInstances[i];
                 }
             }
@@ -95,6 +114,9 @@ namespace Matki.AbilityDesigner
             {
                 m_Holdings[id]--;
             }
+
+            instance.transform.position = m_PoolPosition;
+            instance.gameObject.SetActive(false);
         }
 
         private void ExpandCache(int size)
@@ -105,7 +127,10 @@ namespace Matki.AbilityDesigner
                 GameObject instance = ability.CreateRuntimeInstance();
                 instance.transform.SetParent(transform);
                 instance.transform.position = poolPostion;
-                instances.Add(instance.GetComponent<AbilityInstance>());
+                AbilityInstance abilityInstace = instance.GetComponent<AbilityInstance>();
+                abilityInstace.ability = m_Ability;
+                instances.Add(abilityInstace);
+                instance.SetActive(false);
             }
             m_AbilityInstances = instances.ToArray();
         }

@@ -217,7 +217,8 @@ namespace Matki.ActorSystem
                 }
             }
             height -= transform.position.y;
-            return new Vector3(transform.position.x, transform.position.y + height * 0.5f, transform.position.z);
+            Vector3 result = new Vector3(transform.position.x, transform.position.y + height * 0.5f, transform.position.z);
+            return result;
         }
 
         #endregion

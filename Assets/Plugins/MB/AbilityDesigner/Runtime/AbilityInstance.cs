@@ -20,6 +20,8 @@ namespace Matki.AbilityDesigner
         private IAbilityUser m_Originator;
         private IAbilityUser m_Target;
 
+        private string m_CachedID = "";
+
         internal void Initiate()
         {
             for (int p = 0; p < phaseLists.Length; p++)
@@ -35,11 +37,14 @@ namespace Matki.AbilityDesigner
 
         internal void Cast(IAbilityUser originator, IAbilityUser target)
         {
+            m_CachedID = originator.GetInstanceID() + "";
             m_Originator = originator;
             m_Target = target;
 
             m_LastList = new Stack<int>();
             m_LastList.Push(0);
+
+            transform.position = Vector3.zero;
 
             for (int s = 0; s < subInstanceLinks.Length; s++)
             {
@@ -123,6 +128,11 @@ namespace Matki.AbilityDesigner
                         isDying = true;
                         return;
                     }
+                    // If the list was instant then rerun
+                    if (list.instant)
+                    {
+                        Update();
+                    }
                     break;
                 case Result.Fail:
                     isDying = true;
@@ -144,8 +154,8 @@ namespace Matki.AbilityDesigner
             {
                 // Set the correct idle position
                 subInstanceLinks[s].obj.transform.localPosition = Vector3.zero;
-                subInstanceLinks[s].obj.SetActive(false);
             }
+            ability.Return(m_CachedID, this);
         }
 
         private bool IsDead()
@@ -181,10 +191,24 @@ namespace Matki.AbilityDesigner
 
         private void DefineContext(PhaseList list)
         {
+            AbilityContext.instance = this;
+
             AbilityContext.phaseList = list;
 
             AbilityContext.originator = m_Originator;
             AbilityContext.target = m_Target;
+        }
+
+        internal PhaseList IDToPhaseList(int id)
+        {
+            for (int p = 0; p < phaseLists.Length; p++)
+            {
+                if (phaseLists[p].id == id)
+                {
+                    return phaseLists[p];
+                }
+            }
+            return null;
         }
 
         internal void RunList(PhaseList list)
@@ -204,6 +228,11 @@ namespace Matki.AbilityDesigner
             for (int p = 0; p < phaseLists.Length; p++)
             {
                 phaseLists[p].Destroy();
+            }
+
+            for (int l = 0; l < subInstanceLinks.Length; l++)
+            {
+                DestroyImmediate(subInstanceLinks[l], false);
             }
 
             for (int s = 0; s < sharedVariables.Length; s++)

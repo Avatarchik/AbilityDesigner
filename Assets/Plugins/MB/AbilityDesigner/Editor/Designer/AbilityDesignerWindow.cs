@@ -418,7 +418,6 @@ namespace Matki.AbilityDesigner.Edit
 
         private void OnLostFocus()
         {
-            m_SelectedPhase = null;
         }
 
         private void OnSelectionChange()
@@ -1021,12 +1020,7 @@ namespace Matki.AbilityDesigner.Edit
 
             if (m_SelectedPhase != null)
             {
-                // TODO: reflective editor
                 ReflectiveEditor(m_SelectedPhase);
-                /*
-                Editor editor = Editor.CreateEditor(m_SelectedPhase);
-                editor.DrawDefaultInspector();
-                DestroyImmediate(editor);*/
             }
 
             EditorGUILayout.EndVertical();
@@ -1078,12 +1072,36 @@ namespace Matki.AbilityDesigner.Edit
                     DrawSharedVariableProperty(m_CachedFields[f]);
                     continue;
                 }
+                if (m_CachedFields[f].FieldType.IsEquivalentTo(typeof(PhaseListLink)))
+                {
+                    DrawPhaseListLinkProperty(m_CachedFields[f]);
+                    continue;
+                }
+                if (IsSubclassOfRawGeneric(typeof(SubVariable<>), m_CachedFields[f].FieldType))
+                {
+                    DrawSubVariableProperty(m_CachedFields[f]);
+                    continue;
+                }
 
                 // Drau default property
                 SerializedProperty property = serializedObject.FindProperty(m_CachedFields[f].Name);
                 EditorGUILayout.PropertyField(property);
                 serializedObject.ApplyModifiedProperties();
             }
+        }
+
+        private bool IsSubclassOfRawGeneric(System.Type generic, System.Type toCheck)
+        {
+            while (toCheck != null && toCheck != typeof(object))
+            {
+                System.Type cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+                if (generic == cur)
+                {
+                    return true;
+                }
+                toCheck = toCheck.BaseType;
+            }
+            return false;
         }
 
         private void HandleAttributes(FieldInfo info)
@@ -1094,6 +1112,71 @@ namespace Matki.AbilityDesigner.Edit
                 EditorGUILayout.Space();
                 EditorGUILayout.LabelField(new GUIContent(headerAttribute.header), EditorStyles.boldLabel);
             }
+        }
+
+        private void DrawSubVariableProperty(FieldInfo info)
+        {
+            List<SubInstanceLink> usedLinks = new List<SubInstanceLink>(m_SelectedPhase.runForSubInstances);
+
+            EditorGUILayout.BeginVertical(m_LineBox);
+
+            System.Type[] genTypes = info.FieldType.BaseType.GenericTypeArguments;
+            object value = info.GetValue(m_SelectedPhase);
+
+            MethodInfo prepareMethod = value.GetType().GetMethod("Prepare", BindingFlags.Instance | BindingFlags.NonPublic);
+            prepareMethod.Invoke(value, new object[] { usedLinks.ToArray() });
+
+            MethodInfo getMethod = value.GetType().GetMethod("GetValue", BindingFlags.Instance | BindingFlags.NonPublic);
+            MethodInfo setMethod = value.GetType().GetMethod("SetValue", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            EditorGUILayout.BeginHorizontal(m_LineOdd);
+            EditorGUILayout.LabelField(new GUIContent(ObjectNames.NicifyVariableName(info.Name) + " for:"), m_LineText);
+            EditorGUILayout.EndHorizontal();
+
+            for (int l = 0; l < m_SelectedPhase.runForSubInstances.Length; l++)
+            {
+                SubInstanceLink currentLink = m_SelectedPhase.runForSubInstances[l];
+                EditorGUILayout.BeginHorizontal(l % 2 == 0 ? m_LineEven : m_LineOdd);
+                EditorGUILayout.LabelField(new GUIContent(SUBINSTANCELINK_COLOR + "[" + currentLink.id + "]</color> " + ObjectNames.NicifyVariableName(currentLink.title)), m_LineText);
+                object result = DrawFieldAuto(getMethod.Invoke(value, new object[] { m_SelectedPhase.runForSubInstances[l] }));
+                setMethod.Invoke(value, new object[] { m_SelectedPhase.runForSubInstances[l], result });
+                EditorGUILayout.EndHorizontal();
+            }
+
+            EditorGUILayout.EndVertical();
+        }
+
+        private object DrawFieldAuto(object value)
+        {
+            if (value.GetType().IsEquivalentTo(typeof(int)))
+            {
+                return EditorGUILayout.IntField((int)value);
+            }
+            if (value.GetType().IsEquivalentTo(typeof(float)))
+            {
+                return EditorGUILayout.FloatField((float)value);
+            }
+            if (value.GetType().IsEquivalentTo(typeof(string)))
+            {
+                return EditorGUILayout.TextField((string)value);
+            }
+            if (value.GetType().IsEquivalentTo(typeof(bool)))
+            {
+                return EditorGUILayout.Toggle((bool)value);
+            }
+            if (value.GetType().IsEquivalentTo(typeof(double)))
+            {
+                return EditorGUILayout.DoubleField((double)value);
+            }
+            if (value.GetType().IsSubclassOf(typeof(Object)))
+            {
+                return EditorGUILayout.ObjectField((Object)value, value.GetType(), false);
+            }
+            if (value.GetType().IsEnum)
+            {
+                return EditorGUILayout.EnumPopup((System.Enum)value);
+            }
+            return null;
         }
 
         private void DrawSharedVariableProperty(FieldInfo info)
@@ -1156,11 +1239,58 @@ namespace Matki.AbilityDesigner.Edit
                 {
                     SharedVariable variable = m_Ability.sharedVariables[s];
                     SharedVariable targetVar = (SharedVariable)value.GetValue(target);
-                    menu.AddItem(new GUIContent("[" + variable.id + "] " + variable.title), targetVar == variable, delegate() { value.SetValue(target, variable); });
+                    menu.AddItem(new GUIContent("[" + variable.id + "] " + variable.title), targetVar == variable, delegate () { value.SetValue(target, variable); });
                 }
             }
             menu.DropDown(pos);
         }
+
+        private void DrawPhaseListLinkProperty(FieldInfo info)
+        {
+            HandleAttributes(info);
+            GUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel(ObjectNames.NicifyVariableName(info.Name));
+            
+            PhaseListLink variable = (PhaseListLink)info.GetValue(m_CachedPhase);
+            if (variable == null)
+            {
+                variable = new PhaseListLink();
+                variable.id = -1;
+            }
+
+            List<PhaseList> variables = new List<PhaseList>(m_Ability.phaseLists);
+            PhaseList foundList = variables.Find(value => value.id == variable.id);
+            if (foundList == null)
+            {
+                variable.id = -1;
+            }
+
+
+            GUIContent content = new GUIContent(variable.id == -1 ? "none" : (PHASELIST_COLOR + "<b>[" + variable.id + "]</b></color> " + foundList.title));
+            Rect rect = GUILayoutUtility.GetRect(content, m_SharedVariablePopup);
+            GUI.backgroundColor = variable.id == -1 ? Color.red : Color.white;
+            if (GUI.Button(rect, content, m_SharedVariablePopup))
+            {
+                PhaseListLinkDropdown(rect, info, m_CachedPhase);
+            }
+            GUI.backgroundColor = Color.white;
+            
+            GUILayout.EndHorizontal();
+        }
+
+        public void PhaseListLinkDropdown(Rect pos, FieldInfo value, Phases.Phase target)
+        {
+            GenericMenu menu = new GenericMenu();
+            PhaseListLink variable = (PhaseListLink)value.GetValue(m_CachedPhase);
+            menu.AddItem(new GUIContent("(none)"), variable.id == -1, delegate () { variable.id = -1; });
+            for (int l = 0; l < m_Ability.phaseLists.Length; l++)
+            {
+                PhaseList foundList = m_Ability.phaseLists[l];
+                menu.AddItem(new GUIContent("[" + foundList.id + "] " + foundList.title), variable.id == foundList.id, delegate () { variable.id = foundList.id; });
+            }
+            menu.DropDown(pos);
+        }
+
 
         #endregion
 
@@ -1397,23 +1527,40 @@ namespace Matki.AbilityDesigner.Edit
         void PhasesDropdown(Rect pos, int list)
         {
             string[] guids = AssetDatabase.FindAssets("t:MonoScript");
-            List<System.Type> types = new List<System.Type>();
+            SortedDictionary<string, System.Type> types = new SortedDictionary<string, System.Type>();
             for (int g = 0; g < guids.Length; g++)
             {
                 MonoScript script = AssetDatabase.LoadAssetAtPath<MonoScript>(AssetDatabase.GUIDToAssetPath(guids[g]));
                 System.Type scriptType = script.GetClass();
                 if (scriptType != null && scriptType.IsSubclassOf(typeof(Phases.Phase)) && !scriptType.IsAbstract)
                 {
-                    types.Add(scriptType);
+                    string menuName = scriptType.Name;
+                    PhaseCategoryAttribute category = scriptType.GetCustomAttribute<PhaseCategoryAttribute>(true);
+                    if (category != null)
+                    {
+                        menuName = category.path + "/" + menuName;
+                    }
+
+                    //Categorize
+                    if (scriptType.IsSubclassOf(typeof(Phases.ConditionPhase)))
+                    {
+                        menuName = "Conditions/" + menuName;
+                    }
+                    if (scriptType.IsSubclassOf(typeof(Phases.ActionPhase)))
+                    {
+                        menuName = "Actions/" + menuName;
+                    }
+
+                    types.Add(menuName, scriptType);
                 }
             }
 
             GenericMenu menu = new GenericMenu();
-            for (int t = 0; t < types.Count; t++)
+            foreach (KeyValuePair<string, System.Type> pair in types)
             {
-                System.Type type = types[t];
                 int index = list;
-                menu.AddItem(new GUIContent(types[t].Name), false, delegate() { AddPhaseOfType(type, index); });
+                
+                menu.AddItem(new GUIContent(pair.Key), false, delegate() { AddPhaseOfType(pair.Value, index); });
             }
             menu.DropDown(pos);
         }

@@ -44,6 +44,7 @@ namespace Matki.AbilityDesigner
                 {
                     DefineContext(phases[p].runForSubInstances[s]);
                     phases[p].OnInternalStart();
+                    phases[p].OnInternalCache();
                 }
             }
         }
@@ -90,35 +91,52 @@ namespace Matki.AbilityDesigner
 
         private Result UpdateList()
         {
+            Result result = Result.Success;
+            if (m_CurrentPhase >= phases.Length)
+            {
+                return Result.Success;
+            }
             for (int s = 0; s < phases[m_CurrentPhase].runForSubInstances.Length; s++)
             {
                 DefineContext(phases[m_CurrentPhase].runForSubInstances[s]);
-                Result result = phases[m_CurrentPhase].OnInternalUpdate();
-                switch (result)
+                Result localResult = phases[m_CurrentPhase].OnInternalUpdate();
+                switch (localResult)
                 {
-                    case Result.Success:
-                        m_CurrentPhase++;
-                        if (m_CurrentPhase >= phases.Length)
+                    case Result.Fail:
+                        result = Result.Fail;
+                        break;
+                    case Result.Running:
+                        if (result != Result.Fail)
                         {
-                            m_CurrentPhase = 0;
-                            return Result.Success;
+                            result = Result.Running;
                         }
                         break;
-                    case Result.Fail:
-                        // Break the entire ability
-                        if (phases[m_CurrentPhase].breakOnFail)
-                        {
-                            m_CurrentPhase = 0;
-                            return Result.Fail;
-                        }
-                        // if the phase is conditional then keep running until success
-                        if (phases[m_CurrentPhase].GetType().IsSubclassOf(typeof(Phases.ConditionPhase)))
-                        {
-                            return Result.Running;
-                        }
-                        // Just abandon the current list
-                        return Result.Success;
                 }
+            }
+            switch (result)
+            {
+                case Result.Success:
+                    m_CurrentPhase++;
+                    if (m_CurrentPhase >= phases.Length)
+                    {
+                        m_CurrentPhase = 0;
+                        return Result.Success;
+                    }
+                    break;
+                case Result.Fail:
+                    // Break the entire ability
+                    if (phases[m_CurrentPhase].breakOnFail)
+                    {
+                        m_CurrentPhase = 0;
+                        return Result.Fail;
+                    }
+                    // if the phase is conditional then keep running until success
+                    if (phases[m_CurrentPhase].GetType().IsSubclassOf(typeof(Phases.ConditionPhase)))
+                    {
+                        return Result.Running;
+                    }
+                    // Just abandon the current list
+                    return Result.Success;
             }
             return Result.Running;
         }

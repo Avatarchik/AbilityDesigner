@@ -27,12 +27,10 @@ namespace Matki.AbilityDesigner.Phases
 
             return result;
         }
-        protected internal override void    OnInternalReset() { OnReset(); }
 
         // Exposed Continous Methods
         protected virtual void      OnCast() { }
         protected virtual void      OnStart() { }
         protected virtual Result    OnUpdate() { return Result.Success; }
-        protected virtual void      OnReset() { }
     }
 }

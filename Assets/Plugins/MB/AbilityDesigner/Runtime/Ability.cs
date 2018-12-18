@@ -94,12 +94,7 @@ namespace Matki.AbilityDesigner
             instance.subInstanceLinks = new SubInstanceLink[subInstanceLinks.Length];
             for (int s = 0; s < subInstanceLinks.Length; s++)
             {
-                SubInstanceLink newLink = new SubInstanceLink();
-
-                // Copy Meta
-                newLink.title = subInstanceLinks[s].title;
-                newLink.spawn = subInstanceLinks[s].spawn;
-                newLink.spawnOffset = subInstanceLinks[s].spawnOffset;
+                SubInstanceLink newLink = Instantiate(subInstanceLinks[s]);
 
                 // Create subinstance obj
                 GameObject linkObj;
@@ -166,23 +161,16 @@ namespace Matki.AbilityDesigner
                                 allFields[f].SetValue(instance.phaseLists[l].phases[p], instance.sharedVariables[index]);
                             }
                         }
-
+                        
                         if (allFields[f].FieldType.IsSubclassOf(typeof(SubVariable<>)))
                         {
                             object value = allFields[f].GetValue(phaseLists[l].phases[p]);
-                            SubVariable<object> subVariable = value as SubVariable<object>;
-                            if (subVariable != null)
-                            {
-                                List<SubInstanceLink> keys = new List<SubInstanceLink>(subVariable.Keys);
-                                for (int k = 0; k < keys.Count; k++)
-                                {
-                                    int index = subInstanceLinksList.IndexOf(keys[k]);
 
-                                    object instanceValue = allFields[f].GetValue(instance.phaseLists[l].phases[p]);
-                                    SubVariable<object> instanceSubVariable = value as SubVariable<object>;
-                                    instanceSubVariable.Add(instance.subInstanceLinks[index], subVariable[keys[k]]);
-                                }
-                            }
+                            MethodInfo cloneMethod = value.GetType().GetMethod("Clone", BindingFlags.Instance | BindingFlags.NonPublic);
+                            object clone = cloneMethod.Invoke(value, new object[] { });
+
+
+                            allFields[f].SetValue(instance.phaseLists[l].phases[p], clone);
                         }
                     }
                 }

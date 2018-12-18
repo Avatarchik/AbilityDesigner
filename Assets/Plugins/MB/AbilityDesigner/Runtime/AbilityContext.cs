@@ -16,6 +16,8 @@ namespace Matki.AbilityDesigner
         internal static List<IAbilityUser> allreadyHit { get; set; }
         internal static List<IAbilityUser> currentHit { get; set; }
 
+        internal static AbilityInstance instance { get; set; }
+
         #region Sub Instance Link Redirects
 
         public static GameObject gameObject

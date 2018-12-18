@@ -18,23 +18,28 @@ namespace Matki.AbilityDesigner
             {
                 offset = float.MaxValue;
             }
-            if (offset > cooldowns[0])
+            if (offset >= cooldowns[0])
             {
-                return false;
+                return true;
             }
 
-            return true;
+            return false;
         }
 
         public override void ApplyCast(ref float userFloat)
         {
             float offset = Time.timeSinceLevelLoad - userFloat;
-            float newOffset;
-            int currentCooldown = GetCooldownID(offset, out newOffset);
+            float newOffset = 0f;
+            int currentCooldown = GetCooldownID(offset);
+            currentCooldown = Mathf.Clamp(currentCooldown - 1, -1, cooldowns.Length - 2);
+            for (int c = 0; c <= currentCooldown; c++)
+            {
+                newOffset += cooldowns[c];
+            }
             userFloat = Time.timeSinceLevelLoad - newOffset;
         }
 
-        private int GetCooldownID(float difference, out float offset)
+        private int GetCooldownID(float difference)
         {
             float expectedCooldown = 0f;
             for (int c = 0; c < cooldowns.Length; c++)
@@ -42,12 +47,41 @@ namespace Matki.AbilityDesigner
                 expectedCooldown += cooldowns[c];
                 if (expectedCooldown > difference)
                 {
-                    offset = expectedCooldown - cooldowns[c];
                     return c - 1;
                 }
             }
-            offset = expectedCooldown;
             return cooldowns.Length - 1;
+        }
+
+        public int GetAmunation(float userFloat)
+        {
+            float offset = Time.timeSinceLevelLoad - userFloat;
+            float expectedCooldown = 0f;
+            for (int c = 0; c < cooldowns.Length; c++)
+            {
+                expectedCooldown += cooldowns[c];
+                if (expectedCooldown > offset)
+                {
+                    return c;
+                }
+            }
+            return cooldowns.Length;
+        }
+
+        public float GetProgress(float userFloat)
+        {
+            float offset = Time.timeSinceLevelLoad - userFloat;
+            float expectedCooldown = 0f;
+            for (int c = 0; c < cooldowns.Length; c++)
+            {
+                expectedCooldown += cooldowns[c];
+                if (expectedCooldown > offset)
+                {
+                    float seperation = 1 / (float)cooldowns.Length;
+                    return ((float)c * seperation) + Mathf.InverseLerp(cooldowns[c], 0f, expectedCooldown - offset) * seperation;
+                }
+            }
+            return 1f;
         }
     }
 }
