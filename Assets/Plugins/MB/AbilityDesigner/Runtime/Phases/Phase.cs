@@ -6,8 +6,7 @@ using System.Reflection;
 
 namespace Matki.AbilityDesigner.Phases
 {
-    // TODO: sub variables (a variable which is different for all sub instances)
-
+    [PhaseIcon("{SkinIcons}Phase")]
     public abstract class Phase : ScriptableObject
     {
         [SerializeField]

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Matki.AbilityDesigner.Phases
 {
+    [PhaseIcon("{SkinIcons}Action")]
     public abstract class ActionPhase : Phase
     {
         // Internal Continous Methods

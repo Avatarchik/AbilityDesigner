@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Matki.AbilityDesigner.Phases
 {
+    [PhaseIcon("{SkinIcons}MoveToTarget")]
     [PhaseCategory("Transform")]
     public class MoveToTarget : ActionPhase
     {

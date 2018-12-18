@@ -1430,7 +1430,12 @@ namespace Matki.AbilityDesigner.Edit
                 }
 
                 // Icon
-                EditorGUI.DrawTextureTransparent(iconRect, EditorGUIUtility.whiteTexture);
+                PhaseIconAttribute iconAttribute = m_Ability.phaseLists[list].phases[p].GetType().GetCustomAttribute<PhaseIconAttribute>(true);
+                if (iconAttribute != null)
+                {
+                    Texture iconTexture = Resources.Load<Texture>(Content.GetResourcesPath(iconAttribute.path));
+                    GUI.DrawTexture(iconRect, iconTexture);
+                }
 
                 // Title
                 string title = ObjectNames.NicifyVariableName(currentPhase.GetType().Name);

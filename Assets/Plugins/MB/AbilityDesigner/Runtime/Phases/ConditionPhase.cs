@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Matki.AbilityDesigner.Phases
 {
+    [PhaseIcon("{SkinIcons}Condition")]
     public abstract class ConditionPhase : Phase
     {
         [SerializeField]

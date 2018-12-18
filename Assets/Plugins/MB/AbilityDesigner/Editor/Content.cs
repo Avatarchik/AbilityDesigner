@@ -11,7 +11,7 @@ namespace Matki.AbilityDesigner.Edit
         private const string RESOUCES_PATH = "AbilityDesigner/";
         private const string DATA_PATH = "Data/";
         private const string DARK_SKIN_PATH = "DarkSkin/";
-        private const string BRIGHT_SKIN_PATH = "DarkSkin/";
+        private const string BRIGHT_SKIN_PATH = "BrightSkin/";
         private const string ICONS_PATH = "Icons/";
         private const string ICONS_PATH_DARK = ICONS_PATH + DARK_SKIN_PATH;
         private const string ICONS_PATH_BRIGHT = ICONS_PATH + BRIGHT_SKIN_PATH;
@@ -19,6 +19,7 @@ namespace Matki.AbilityDesigner.Edit
         private const string XML_PATH = META_PATH + "ABILITYDESIGNER_VERSION";
 
         private const string SKIN_ALIAS = "{SkinColor}";
+        private const string ICON_SKIN_ALIAS = "{SkinIcons}";
 
         internal const string ASSET_TAG = "asset";
         internal const string DESCRIPTION_TAG = "description";
@@ -57,6 +58,13 @@ namespace Matki.AbilityDesigner.Edit
         internal static string GetPath(string varPath)
         {
             varPath = varPath.Replace(SKIN_ALIAS, EditorGUIUtility.isProSkin ? DARK_SKIN_PATH : BRIGHT_SKIN_PATH);
+            varPath = varPath.Replace(ICON_SKIN_ALIAS, EditorGUIUtility.isProSkin ? ICONS_PATH_DARK : ICONS_PATH_BRIGHT);
+            return varPath;
+        }
+
+        internal static string GetResourcesPath(string varPath)
+        {
+            varPath = RESOUCES_PATH +  GetPath(varPath);
             return varPath;
         }
 
