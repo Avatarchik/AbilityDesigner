@@ -44,6 +44,7 @@ namespace Matki.AbilityDesigner
         internal Collider collider { get; private set; }
         internal MeshFilter meshFilter { get; private set; }
         internal MeshRenderer meshRenderer { get; private set; }
+        internal MeshRenderer[] meshRendererAll { get; private set; }
 
         // Sub instance runtime data
         internal Vector3 direction { get; set; }
@@ -64,6 +65,7 @@ namespace Matki.AbilityDesigner
             collider = obj.GetComponent<Collider>();
             meshFilter = obj.GetComponent<MeshFilter>();
             meshRenderer = obj.GetComponent<MeshRenderer>();
+            meshRendererAll = obj.GetComponentsInChildren<MeshRenderer>(true);
         }
 
         internal static SubInstanceLink CreateInstance(int id)

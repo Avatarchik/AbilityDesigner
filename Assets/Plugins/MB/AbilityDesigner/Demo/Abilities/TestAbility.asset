@@ -67,8 +67,8 @@ MonoBehaviour:
   m_Instant: 0
   m_BreakOnFail: 0
   m_RunForSubInstances:
-  - {fileID: 114770828382592838}
   - {fileID: 114635483023850734}
+  - {fileID: 114770828382592838}
   m_Target:
     m_Keys: 0100000000000000
     m_Values: 0000000001000000

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Reflection;
+using UnityEditor.VersionControl;
 
 namespace Matki.AbilityDesigner.Edit
 {
@@ -101,7 +102,7 @@ namespace Matki.AbilityDesigner.Edit
         #region Private Fields
 
         private Ability m_Ability;
-        private Phases.Phase m_SelectedPhase;
+        private Phases.PhaseCore m_SelectedPhase;
 
         #endregion
 
@@ -446,6 +447,8 @@ namespace Matki.AbilityDesigner.Edit
 
         private void OnGUI()
         {
+            EditorGUI.BeginChangeCheck();
+
             Event e = Event.current;
             if (e.isMouse && e.button == 0 && e.type == EventType.MouseDown)
             {
@@ -471,7 +474,6 @@ namespace Matki.AbilityDesigner.Edit
             GUILayout.BeginHorizontal(GUILayout.Width(position.width - INSPECTOR_WIDTH));
             GUILayout.Space(10f);
             EditorToolbar();
-            // TODO: Draw Custom Stuff
             GUILayout.Space(10f);
             GUILayout.EndHorizontal();
             GUILayout.EndHorizontal();
@@ -491,6 +493,17 @@ namespace Matki.AbilityDesigner.Edit
             GUILayout.BeginArea(edtiorRect, m_PhaseBackground);
             EditorArea(new Rect(0f, 0f, edtiorRect.width, edtiorRect.height));
             GUILayout.EndArea();
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                if (Provider.isActive && Provider.enabled)
+                {
+                    if (!Provider.IsOpenForEdit(Provider.GetAssetByPath(AssetDatabase.GetAssetPath(m_Ability))))
+                    {
+                        Provider.Checkout(m_Ability, CheckoutMode.Asset);
+                    }
+                }
+            }
 
             if (OnRepaint != null)
             {
@@ -1030,11 +1043,11 @@ namespace Matki.AbilityDesigner.Edit
         }
 
         [System.NonSerialized]
-        Phases.Phase m_CachedPhase;
+        Phases.PhaseCore m_CachedPhase;
         [System.NonSerialized]
         FieldInfo[] m_CachedFields;
 
-        void ReflectiveEditor(Phases.Phase target)
+        void ReflectiveEditor(Phases.PhaseCore target)
         {
             if (target != m_CachedPhase)
             {
@@ -1061,6 +1074,7 @@ namespace Matki.AbilityDesigner.Edit
             GUILayout.BeginVertical(EditorStyles.helpBox);
             target.customTitle = EditorGUILayout.TextField(new GUIContent("Custom Title"), target.customTitle);
             target.customColor = EditorGUILayout.ColorField(new GUIContent("Custom Color"), target.customColor);
+            target.breakOnFail = EditorGUILayout.Toggle(new GUIContent("Break On Fail"), target.breakOnFail);
             GUILayout.EndVertical();
 
             SerializedObject serializedObject = new SerializedObject(target);
@@ -1193,6 +1207,8 @@ namespace Matki.AbilityDesigner.Edit
                 linked = true;
             }
 
+            linked = true;
+
             if (linked)
             {
                 GUIContent content = new GUIContent(variable == null ? "none" : (SHAREDVARIABLE_COLOR + "<b>[" + variable.id + "]</b></color> " + variable.title));
@@ -1211,7 +1227,7 @@ namespace Matki.AbilityDesigner.Edit
                 EditorGUILayout.PropertyField(property, GUIContent.none);
                 serializedObject.ApplyModifiedProperties();
             }
-
+            /*
             if (GUILayout.Button(new GUIContent("▶"), m_SharedVariableToggle, GUILayout.Width(20f)))
             {
                 if (linked)
@@ -1225,11 +1241,11 @@ namespace Matki.AbilityDesigner.Edit
                     DestroyImmediate(variable, true);
                     info.SetValue(m_CachedPhase, null);
                 }
-            }
+            }*/
             GUILayout.EndHorizontal();
         }
 
-        public void SharedVariableDropdown(Rect pos, FieldInfo value, Phases.Phase target)
+        public void SharedVariableDropdown(Rect pos, FieldInfo value, Phases.PhaseCore target)
         {
             GenericMenu menu = new GenericMenu();
             menu.AddItem(new GUIContent("(none)"), value.GetValue(target) == null, delegate () { value.SetValue(target, null); });
@@ -1278,7 +1294,7 @@ namespace Matki.AbilityDesigner.Edit
             GUILayout.EndHorizontal();
         }
 
-        public void PhaseListLinkDropdown(Rect pos, FieldInfo value, Phases.Phase target)
+        public void PhaseListLinkDropdown(Rect pos, FieldInfo value, Phases.PhaseCore target)
         {
             GenericMenu menu = new GenericMenu();
             PhaseListLink variable = (PhaseListLink)value.GetValue(m_CachedPhase);
@@ -1371,7 +1387,7 @@ namespace Matki.AbilityDesigner.Edit
             for (int p = 0; p < m_Ability.phaseLists[list].phases.Length; p++)
             {
                 float phaseHeight = GetPhaseHeight(list, p);
-                Phases.Phase currentPhase = m_Ability.phaseLists[list].phases[p];
+                Phases.PhaseCore currentPhase = m_Ability.phaseLists[list].phases[p];
 
                 GUILayout.BeginArea(new Rect(PHASELIST_SPACING.x, height, width, phaseHeight), m_SelectedPhase == currentPhase ? m_PhaseSelected : m_Phase);
                 GUILayout.EndArea();
@@ -1443,26 +1459,34 @@ namespace Matki.AbilityDesigner.Edit
                 title = string.IsNullOrEmpty(customTitle) ? title : customTitle;
                 EditorGUI.LabelField(titleRect, new GUIContent(title), m_PhaseTitle);
 
-                // Sub Instance Links
-                float linksHeight = (currentPhase.runForSubInstances.Length + 1) * 20f;
-                float linksWidth = width - PHASE_SPACING * 2f;
-                GUILayout.BeginArea(new Rect(PHASE_SPACING, PHASETITLE_HEIGHT + PHASE_SPACING * 2f, linksWidth, linksHeight), m_LineBox);
-                GUILayout.BeginArea(new Rect(1f, 1f, linksWidth - 2f, 18f), m_LineOdd);
-                EditorGUI.LabelField(new Rect(0f, 0f, linksWidth - 60f, 18f), new GUIContent("Run for Sub Instances"), m_LineText);
-                Rect setRect = new Rect(linksWidth - 51f, -1f, 50f, 18.5f);
-                if (GUI.Button(setRect, new GUIContent("Set")))
+                DefaultSubInstanceLinkOnlyAttribute subInstancesDeactive = m_Ability.phaseLists[list].phases[p].GetType().GetCustomAttribute<DefaultSubInstanceLinkOnlyAttribute>(true);
+                if (subInstancesDeactive == null)
                 {
-                    LinksDropdown(setRect, list, p);
-                }
-                GUILayout.EndArea();
-                for (int l = 0; l < currentPhase.runForSubInstances.Length; l++)
-                {
-                    GUILayout.BeginArea(new Rect(1f, 19f + l * 20f, linksWidth - 2f, 20f), l % 2 == 0 ? m_LineEven : m_LineOdd);
-                    EditorGUI.LabelField(new Rect(0f, 0f, linksWidth - 2f, 18f), new GUIContent(SUBINSTANCELINK_COLOR + "<b>[" + currentPhase.runForSubInstances[l].id + "]</b></color> " +
-                        ObjectNames.NicifyVariableName(currentPhase.runForSubInstances[l].title)), m_LineText);
+                    // Sub Instance Links
+                    float linksHeight = (currentPhase.runForSubInstances.Length + 1) * 20f;
+                    float linksWidth = width - PHASE_SPACING * 2f;
+                    GUILayout.BeginArea(new Rect(PHASE_SPACING, PHASETITLE_HEIGHT + PHASE_SPACING * 2f, linksWidth, linksHeight), m_LineBox);
+                    GUILayout.BeginArea(new Rect(1f, 1f, linksWidth - 2f, 18f), m_LineOdd);
+                    EditorGUI.LabelField(new Rect(0f, 0f, linksWidth - 60f, 18f), new GUIContent("Run for Sub Instances"), m_LineText);
+                    Rect setRect = new Rect(linksWidth - 51f, -1f, 50f, 18.5f);
+                    if (GUI.Button(setRect, new GUIContent("Set")))
+                    {
+                        LinksDropdown(setRect, list, p);
+                    }
+                    GUILayout.EndArea();
+                    for (int l = 0; l < currentPhase.runForSubInstances.Length; l++)
+                    {
+                        GUILayout.BeginArea(new Rect(1f, 19f + l * 20f, linksWidth - 2f, 20f), l % 2 == 0 ? m_LineEven : m_LineOdd);
+                        EditorGUI.LabelField(new Rect(0f, 0f, linksWidth - 2f, 18f), new GUIContent(SUBINSTANCELINK_COLOR + "<b>[" + currentPhase.runForSubInstances[l].id + "]</b></color> " +
+                            ObjectNames.NicifyVariableName(currentPhase.runForSubInstances[l].title)), m_LineText);
+                        GUILayout.EndArea();
+                    }
                     GUILayout.EndArea();
                 }
-                GUILayout.EndArea();
+                else
+                {
+                    m_Ability.phaseLists[list].phases[p].runForSubInstances = new SubInstanceLink[] { m_Ability.subInstanceLinks[0] };
+                }
 
                 GUILayout.EndArea();
                 height += phaseHeight + PHASELIST_SPACING.y;
@@ -1537,23 +1561,13 @@ namespace Matki.AbilityDesigner.Edit
             {
                 MonoScript script = AssetDatabase.LoadAssetAtPath<MonoScript>(AssetDatabase.GUIDToAssetPath(guids[g]));
                 System.Type scriptType = script.GetClass();
-                if (scriptType != null && scriptType.IsSubclassOf(typeof(Phases.Phase)) && !scriptType.IsAbstract)
+                if (scriptType != null && scriptType.IsSubclassOf(typeof(Phases.PhaseCore)) && !scriptType.IsAbstract)
                 {
                     string menuName = scriptType.Name;
                     PhaseCategoryAttribute category = scriptType.GetCustomAttribute<PhaseCategoryAttribute>(true);
                     if (category != null)
                     {
                         menuName = category.path + "/" + menuName;
-                    }
-
-                    //Categorize
-                    if (scriptType.IsSubclassOf(typeof(Phases.ConditionPhase)))
-                    {
-                        menuName = "Conditions/" + menuName;
-                    }
-                    if (scriptType.IsSubclassOf(typeof(Phases.ActionPhase)))
-                    {
-                        menuName = "Actions/" + menuName;
                     }
 
                     types.Add(menuName, scriptType);
@@ -1572,8 +1586,8 @@ namespace Matki.AbilityDesigner.Edit
 
         private void AddPhaseOfType(System.Type type, int list)
         {
-            List<Phases.Phase> phases = new List<Phases.Phase>(m_Ability.phaseLists[list].phases);
-            Phases.Phase phase = (Phases.Phase)CreateInstance(type);
+            List<Phases.PhaseCore> phases = new List<Phases.PhaseCore>(m_Ability.phaseLists[list].phases);
+            Phases.PhaseCore phase = (Phases.PhaseCore)CreateInstance(type);
             phases.Add(phase);
             m_Ability.phaseLists[list].phases = phases.ToArray();
             AssetDatabase.AddObjectToAsset(phase, m_Ability);
@@ -1582,8 +1596,8 @@ namespace Matki.AbilityDesigner.Edit
 
         private void RemovePhaseAt(int list, int index)
         {
-            List<Phases.Phase> phases = new List<Phases.Phase>(m_Ability.phaseLists[list].phases);
-            Phases.Phase phase = phases[index];
+            List<Phases.PhaseCore> phases = new List<Phases.PhaseCore>(m_Ability.phaseLists[list].phases);
+            Phases.PhaseCore phase = phases[index];
             phases.RemoveAt(index);
             DestroyImmediate(phase, true);
             m_Ability.phaseLists[list].phases = phases.ToArray();
@@ -1624,9 +1638,17 @@ namespace Matki.AbilityDesigner.Edit
 
         float GetPhaseHeight(int list, int phase)
         {
-            float height = PHASETITLE_HEIGHT + PHASE_SPACING * 3f;
-            height += (m_Ability.phaseLists[list].phases[phase].runForSubInstances.Length + 1) * 20f;
-            return height;
+            DefaultSubInstanceLinkOnlyAttribute subInstancesDeactive = m_Ability.phaseLists[list].phases[phase].GetType().GetCustomAttribute<DefaultSubInstanceLinkOnlyAttribute>(true);
+            if (subInstancesDeactive == null)
+            {
+                float height = PHASETITLE_HEIGHT + PHASE_SPACING * 3f;
+                height += (m_Ability.phaseLists[list].phases[phase].runForSubInstances.Length + 1) * 20f;
+                return height;
+            }
+            else
+            {
+                return PHASETITLE_HEIGHT + PHASE_SPACING * 2f;
+            }
         }
 
         #endregion

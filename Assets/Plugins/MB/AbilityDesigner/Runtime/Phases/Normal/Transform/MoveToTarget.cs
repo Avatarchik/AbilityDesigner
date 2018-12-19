@@ -4,33 +4,41 @@ using UnityEngine;
 
 namespace Matki.AbilityDesigner.Phases
 {
-    [PhaseIcon("{SkinIcons}FollowTarget")]
+    [PhaseIcon("{SkinIcons}MoveToTarget")]
     [PhaseCategory("Transform")]
-    public class FollowTarget : ActionPhase
+    public class MoveToTarget : Phase
     {
         public SubTarget m_Target;
         public SubFloat m_SpeedPerInstance;
-        
-        protected override Result OnUpdate()
+
+        public PhaseListLink m_RunWhile;
+
+        private SubVector3 m_TargetPosition = new SubVector3();
+
+        protected override void OnCast()
         {
-            Vector3 targetPos = transform.position;
             switch (m_Target.Value)
             {
                 case Target.Target:
-                    targetPos = target.GetCenter();
+                    m_TargetPosition.Value = target.GetCenter();
                     break;
                 case Target.Originator:
-                    targetPos = originator.GetCenter();
+                    m_TargetPosition.Value = originator.GetCenter();
                     break;
             }
+        }
 
-            Vector3 direction = (targetPos - transform.position).normalized * m_SpeedPerInstance.Value * Time.deltaTime;
-            if (Vector3.Distance(targetPos, transform.position) <= direction.magnitude)
+        protected override Result OnUpdate()
+        {
+            Vector3 direction = (m_TargetPosition.Value - transform.position).normalized * m_SpeedPerInstance.Value * Time.deltaTime;
+            if (Vector3.Distance(m_TargetPosition.Value, transform.position) <= direction.magnitude)
             {
-                transform.position = targetPos;
+                transform.position = m_TargetPosition.Value;
                 return Result.Success;
             }
             transform.position += direction;
+
+            m_RunWhile.RunList();
             return Result.Running;
         }
 

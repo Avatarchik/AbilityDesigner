@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Matki.AbilityDesigner.Phases
 {
     [PhaseCategory("Transform")]
-    public class MoveToTargetCircular : ActionPhase
+    public class MoveToTargetCircular : Phase
     {
         public SubTarget m_Target;
         public SubFloat m_SpeedPerInstance;

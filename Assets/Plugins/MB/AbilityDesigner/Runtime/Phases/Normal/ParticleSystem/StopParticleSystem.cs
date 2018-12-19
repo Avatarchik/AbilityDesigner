@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Matki.AbilityDesigner.Phases
 {
     [PhaseCategory("Particle")]
-    public class StopParticleSystem : ActionPhase
+    public class StopParticleSystem : Phase
     {
 
         protected override Result OnUpdate()

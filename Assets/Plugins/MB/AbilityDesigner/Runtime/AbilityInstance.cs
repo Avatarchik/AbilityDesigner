@@ -75,6 +75,13 @@ namespace Matki.AbilityDesigner
                 {
                     link.meshRenderer.enabled = true;
                 }
+                for (int r = 0; r < link.meshRendererAll.Length; r++)
+                {
+                    if (link.meshRendererAll[r] != null)
+                    {
+                        link.meshRendererAll[r].enabled = true;
+                    }
+                }
 
                 if (target != null)
                 {
@@ -183,6 +190,13 @@ namespace Matki.AbilityDesigner
                 if (link.meshRenderer != null)
                 {
                     link.meshRenderer.enabled = false;
+                }
+                for (int r = 0; r < link.meshRendererAll.Length; r++)
+                {
+                    if (link.meshRendererAll[r] != null)
+                    {
+                        link.meshRendererAll[r].enabled = false;
+                    }
                 }
             }
 

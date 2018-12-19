@@ -51,6 +51,10 @@ namespace Matki.AbilityDesigner
 
         internal override void RestoreDefault()
         {
+            if (typeof(T).IsSubclassOf(typeof(Object)))
+            {
+                DestroyImmediate(m_Value as Object);
+            }
             m_Value = m_DefaultValue;
         }
     }

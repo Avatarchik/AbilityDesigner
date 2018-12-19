@@ -19,8 +19,8 @@ namespace Matki.AbilityDesigner
         public bool instant { get { return m_Instant; } internal set { m_Instant = value; } }
 
         [SerializeField]
-        private Phases.Phase[] m_Phases = new Phases.Phase[0];
-        internal Phases.Phase[] phases { get { return m_Phases; } set { m_Phases = value; } }
+        private Phases.PhaseCore[] m_Phases = new Phases.PhaseCore[0];
+        internal Phases.PhaseCore[] phases { get { return m_Phases; } set { m_Phases = value; } }
 
         private int m_CurrentPhase;
 
@@ -130,11 +130,6 @@ namespace Matki.AbilityDesigner
                         m_CurrentPhase = 0;
                         return Result.Fail;
                     }
-                    // if the phase is conditional then keep running until success
-                    if (phases[m_CurrentPhase].GetType().IsSubclassOf(typeof(Phases.ConditionPhase)))
-                    {
-                        return Result.Running;
-                    }
                     // Just abandon the current list
                     return Result.Success;
             }
@@ -160,10 +155,10 @@ namespace Matki.AbilityDesigner
             clone.instant = instant;
             clone.m_CurrentPhase = m_CurrentPhase;
 
-            clone.phases = new Phases.Phase[phases.Length];
+            clone.phases = new Phases.PhaseCore[phases.Length];
             for (int p = 0; p < phases.Length; p++)
             {
-                clone.phases[p] = ScriptableObject.Instantiate<Phases.Phase>(phases[p]);
+                clone.phases[p] = ScriptableObject.Instantiate<Phases.PhaseCore>(phases[p]);
             }
 
             return clone;

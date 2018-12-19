@@ -32,6 +32,20 @@ MonoBehaviour:
   - {fileID: 114140205885463556}
   - {fileID: 114584107796389484}
   m_SharedVariables: []
+--- !u!114 &114135369336856766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3a74b937f7f1014ebf6eca16df059c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ID: -1
+  m_Title: 
+  m_Value: 0
 --- !u!114 &114140205885463556
 MonoBehaviour:
   m_ObjectHideFlags: 0
