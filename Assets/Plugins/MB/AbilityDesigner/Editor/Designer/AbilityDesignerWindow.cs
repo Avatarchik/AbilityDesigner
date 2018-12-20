@@ -532,24 +532,45 @@ namespace Matki.AbilityDesigner.Edit
 
         void TabArea()
         {
-            if (GUILayout.Button(new GUIContent("General"), m_CurrentlyActive == Tab.General ? m_ToolbarButtonSelected : m_ToolbarButton))
+            Event e = Event.current;
+            if (GUILayout.Button(new GUIContent("General"), m_CurrentlyActive == Tab.General ? m_ToolbarButtonSelected : m_ToolbarButton)
+                || (e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha1))
             {
-                m_CurrentlyActive = Tab.General;
+                OnRepaint = delegate ()
+                {
+                    m_CurrentlyActive = Tab.General;
+                    OnRepaint = null;
+                };
                 Repaint();
             }
-            if (GUILayout.Button(new GUIContent("Structure"), m_CurrentlyActive == Tab.Structure ? m_ToolbarButtonSelected : m_ToolbarButton))
+            if (GUILayout.Button(new GUIContent("Structure"), m_CurrentlyActive == Tab.Structure ? m_ToolbarButtonSelected : m_ToolbarButton)
+                || (e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha2))
             {
-                m_CurrentlyActive = Tab.Structure;
+                OnRepaint = delegate ()
+                {
+                    m_CurrentlyActive = Tab.Structure;
+                    OnRepaint = null;
+                };
                 Repaint();
             }
-            if (GUILayout.Button(new GUIContent("Variables"), m_CurrentlyActive == Tab.Variables ? m_ToolbarButtonSelected : m_ToolbarButton))
+            if (GUILayout.Button(new GUIContent("Variables"), m_CurrentlyActive == Tab.Variables ? m_ToolbarButtonSelected : m_ToolbarButton)
+                || (e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha3))
             {
-                m_CurrentlyActive = Tab.Variables;
+                OnRepaint = delegate ()
+                {
+                    m_CurrentlyActive = Tab.Variables;
+                    OnRepaint = null;
+                };
                 Repaint();
             }
-            if (GUILayout.Button(new GUIContent("Inspector"), m_CurrentlyActive == Tab.Inspector ? m_ToolbarButtonSelected : m_ToolbarButton))
+            if (GUILayout.Button(new GUIContent("Inspector"), m_CurrentlyActive == Tab.Inspector ? m_ToolbarButtonSelected : m_ToolbarButton)
+                || (e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha4))
             {
-                m_CurrentlyActive = Tab.Inspector;
+                OnRepaint = delegate ()
+                {
+                    m_CurrentlyActive = Tab.Inspector;
+                    OnRepaint = null;
+                };
                 Repaint();
             }
         }
@@ -1316,11 +1337,11 @@ namespace Matki.AbilityDesigner.Edit
 
         void EditorToolbar()
         {
-            if (GUILayout.Button(new GUIContent(m_Ability.name), m_CurrentlyActive == Tab.General ? m_ToolbarButtonSelected : m_ToolbarButton, GUILayout.Width(100f)))
+            if (GUILayout.Button(new GUIContent(m_Ability.name), m_ToolbarButton, GUILayout.Width(100f)))
             {
                 Repaint();
             }
-            if (GUILayout.Button(new GUIContent("Select"), m_CurrentlyActive == Tab.General ? m_ToolbarButtonSelected : m_ToolbarButton, GUILayout.Width(100f)))
+            if (GUILayout.Button(new GUIContent("Select"), m_ToolbarButton, GUILayout.Width(100f)))
             {
                 Repaint();
             }
@@ -1387,108 +1408,10 @@ namespace Matki.AbilityDesigner.Edit
             for (int p = 0; p < m_Ability.phaseLists[list].phases.Length; p++)
             {
                 float phaseHeight = GetPhaseHeight(list, p);
-                Phases.PhaseCore currentPhase = m_Ability.phaseLists[list].phases[p];
 
-                GUILayout.BeginArea(new Rect(PHASELIST_SPACING.x, height, width, phaseHeight), m_SelectedPhase == currentPhase ? m_PhaseSelected : m_Phase);
-                GUILayout.EndArea();
-                Color backgroundColor = currentPhase.customColor;
-                backgroundColor.a = 1f;
-                GUI.backgroundColor = backgroundColor;
-                GUILayout.BeginArea(new Rect(PHASELIST_SPACING.x, height, width, phaseHeight), m_Phase);
-                GUI.backgroundColor = Color.white;
+                Rect phaseRect = new Rect(PHASELIST_SPACING.x, height, width, phaseHeight);
+                PhaseArea(phaseRect, list, p);
 
-                // Events
-                Event e = Event.current;
-                Rect mouseRect = new Rect(0f, 0f, width, phaseHeight);
-                if (e.isMouse && e.button == 0 && e.type == EventType.MouseDown)
-                {
-                    if (mouseRect.Contains(e.mousePosition))
-                    {
-                        m_SelectedPhase = currentPhase;
-                        Repaint();
-                    }
-                }
-
-                if (e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Delete)
-                {
-                    if (m_SelectedPhase == currentPhase)
-                    {
-                        int listIndex = list;
-                        int phaseIndex = p;
-                        m_SelectedPhase = null;
-                        OnRepaint = delegate ()
-                        {
-                            RemovePhaseAt(listIndex, phaseIndex);
-                            OnRepaint = null;
-                        };
-                        Repaint();
-                    }
-                }
-
-                Rect iconRect = rect;
-                Rect titleRect = rect;
-                float iconHeight = PHASETITLE_HEIGHT;
-                switch (PHASEICON_LAYOUT)
-                {
-                    case EditorSkin.PhaseIconLayout.Centered:
-                        iconHeight = PHASETITLE_HEIGHT - 30f;
-                        iconRect = new Rect(width / 2f - iconHeight / 2f, PHASE_SPACING, iconHeight, iconHeight);
-                        titleRect = new Rect(0f, iconHeight + PHASE_SPACING * 2f, width, 20f);
-                        break;
-                    case EditorSkin.PhaseIconLayout.Flat:
-                        iconRect = new Rect(PHASE_SPACING, PHASE_SPACING, PHASETITLE_HEIGHT, PHASETITLE_HEIGHT);
-                        titleRect = new Rect(PHASETITLE_HEIGHT + PHASE_SPACING, PHASE_SPACING, width - PHASETITLE_HEIGHT - PHASE_SPACING * 2f, PHASETITLE_HEIGHT);
-                        break;
-                    case EditorSkin.PhaseIconLayout.NoIcon:
-                        iconRect = new Rect(PHASE_SPACING, PHASE_SPACING, 0f, 0f);
-                        titleRect = new Rect(PHASE_SPACING, PHASE_SPACING, width - PHASE_SPACING * 2f, PHASETITLE_HEIGHT);
-                        break;
-                }
-
-                // Icon
-                PhaseIconAttribute iconAttribute = m_Ability.phaseLists[list].phases[p].GetType().GetCustomAttribute<PhaseIconAttribute>(true);
-                if (iconAttribute != null)
-                {
-                    Texture iconTexture = Resources.Load<Texture>(Content.GetResourcesPath(iconAttribute.path));
-                    GUI.DrawTexture(iconRect, iconTexture);
-                }
-
-                // Title
-                string title = ObjectNames.NicifyVariableName(currentPhase.GetType().Name);
-                string customTitle = currentPhase.customTitle;
-                title = string.IsNullOrEmpty(customTitle) ? title : customTitle;
-                EditorGUI.LabelField(titleRect, new GUIContent(title), m_PhaseTitle);
-
-                DefaultSubInstanceLinkOnlyAttribute subInstancesDeactive = m_Ability.phaseLists[list].phases[p].GetType().GetCustomAttribute<DefaultSubInstanceLinkOnlyAttribute>(true);
-                if (subInstancesDeactive == null)
-                {
-                    // Sub Instance Links
-                    float linksHeight = (currentPhase.runForSubInstances.Length + 1) * 20f;
-                    float linksWidth = width - PHASE_SPACING * 2f;
-                    GUILayout.BeginArea(new Rect(PHASE_SPACING, PHASETITLE_HEIGHT + PHASE_SPACING * 2f, linksWidth, linksHeight), m_LineBox);
-                    GUILayout.BeginArea(new Rect(1f, 1f, linksWidth - 2f, 18f), m_LineOdd);
-                    EditorGUI.LabelField(new Rect(0f, 0f, linksWidth - 60f, 18f), new GUIContent("Run for Sub Instances"), m_LineText);
-                    Rect setRect = new Rect(linksWidth - 51f, -1f, 50f, 18.5f);
-                    if (GUI.Button(setRect, new GUIContent("Set")))
-                    {
-                        LinksDropdown(setRect, list, p);
-                    }
-                    GUILayout.EndArea();
-                    for (int l = 0; l < currentPhase.runForSubInstances.Length; l++)
-                    {
-                        GUILayout.BeginArea(new Rect(1f, 19f + l * 20f, linksWidth - 2f, 20f), l % 2 == 0 ? m_LineEven : m_LineOdd);
-                        EditorGUI.LabelField(new Rect(0f, 0f, linksWidth - 2f, 18f), new GUIContent(SUBINSTANCELINK_COLOR + "<b>[" + currentPhase.runForSubInstances[l].id + "]</b></color> " +
-                            ObjectNames.NicifyVariableName(currentPhase.runForSubInstances[l].title)), m_LineText);
-                        GUILayout.EndArea();
-                    }
-                    GUILayout.EndArea();
-                }
-                else
-                {
-                    m_Ability.phaseLists[list].phases[p].runForSubInstances = new SubInstanceLink[] { m_Ability.subInstanceLinks[0] };
-                }
-
-                GUILayout.EndArea();
                 height += phaseHeight + PHASELIST_SPACING.y;
             }
 
@@ -1499,9 +1422,492 @@ namespace Matki.AbilityDesigner.Edit
             }
         }
 
+        private void PhaseArea(Rect rect, int list, int phase)
+        {
+            Phases.PhaseCore currentPhase = m_Ability.phaseLists[list].phases[phase];
+
+            GUILayout.BeginArea(rect, m_SelectedPhase == currentPhase ? m_PhaseSelected : m_Phase);
+            GUILayout.EndArea();
+            Color backgroundColor = currentPhase.customColor;
+            backgroundColor.a = 1f;
+            GUI.backgroundColor = backgroundColor;
+            GUILayout.BeginArea(rect, m_Phase);
+            GUI.backgroundColor = Color.white;
+
+            int listIndex = list;
+            int phaseIndex = phase;
+
+            // Events
+            Event e = Event.current;
+            Rect mouseRect = new Rect(0f, 0f, rect.width, rect.height);
+            if (e.isMouse && e.button == 0 && e.type == EventType.MouseDown)
+            {
+                if (mouseRect.Contains(e.mousePosition))
+                {
+                    m_SelectedPhase = currentPhase;
+                    Repaint();
+                }
+            }
+            HandlePhaseContextMenu(mouseRect, list, phase);
+            HandlePhaseShortcuts(list, phase);
+
+            Rect iconRect = rect;
+            Rect titleRect = rect;
+            float iconHeight = PHASETITLE_HEIGHT;
+            switch (PHASEICON_LAYOUT)
+            {
+                case EditorSkin.PhaseIconLayout.Centered:
+                    iconHeight = PHASETITLE_HEIGHT - 30f;
+                    iconRect = new Rect(rect.width / 2f - iconHeight / 2f, PHASE_SPACING, iconHeight, iconHeight);
+                    titleRect = new Rect(0f, iconHeight + PHASE_SPACING * 2f, rect.width, 20f);
+                    break;
+                case EditorSkin.PhaseIconLayout.Flat:
+                    iconRect = new Rect(PHASE_SPACING, PHASE_SPACING, PHASETITLE_HEIGHT, PHASETITLE_HEIGHT);
+                    titleRect = new Rect(PHASETITLE_HEIGHT + PHASE_SPACING, PHASE_SPACING, rect.width - PHASETITLE_HEIGHT - PHASE_SPACING * 2f, PHASETITLE_HEIGHT);
+                    break;
+                case EditorSkin.PhaseIconLayout.NoIcon:
+                    iconRect = new Rect(PHASE_SPACING, PHASE_SPACING, 0f, 0f);
+                    titleRect = new Rect(PHASE_SPACING, PHASE_SPACING, rect.width - PHASE_SPACING * 2f, PHASETITLE_HEIGHT);
+                    break;
+            }
+
+            // Icon
+            PhaseIconAttribute iconAttribute = m_Ability.phaseLists[list].phases[phase].GetType().GetCustomAttribute<PhaseIconAttribute>(true);
+            if (iconAttribute != null)
+            {
+                Texture iconTexture = Resources.Load<Texture>(Content.GetResourcesPath(iconAttribute.path));
+                GUI.DrawTexture(iconRect, iconTexture);
+            }
+
+            // Title
+            string title = ObjectNames.NicifyVariableName(currentPhase.GetType().Name);
+            string customTitle = currentPhase.customTitle;
+            title = string.IsNullOrEmpty(customTitle) ? title : customTitle;
+            EditorGUI.LabelField(titleRect, new GUIContent(title), m_PhaseTitle);
+
+            DefaultSubInstanceLinkOnlyAttribute subInstancesDeactive = m_Ability.phaseLists[list].phases[phase].GetType().GetCustomAttribute<DefaultSubInstanceLinkOnlyAttribute>(true);
+            if (subInstancesDeactive == null)
+            {
+                // Sub Instance Links
+                float linksHeight = (currentPhase.runForSubInstances.Length + 1) * 20f;
+                float linksWidth = rect.width - PHASE_SPACING * 2f;
+                GUILayout.BeginArea(new Rect(PHASE_SPACING, PHASETITLE_HEIGHT + PHASE_SPACING * 2f, linksWidth, linksHeight), m_LineBox);
+                GUILayout.BeginArea(new Rect(1f, 1f, linksWidth - 2f, 18f), m_LineOdd);
+                EditorGUI.LabelField(new Rect(0f, 0f, linksWidth - 60f, 18f), new GUIContent("Run for Sub Instances"), m_LineText);
+                Rect setRect = new Rect(linksWidth - 51f, -1f, 50f, 18.5f);
+                if (GUI.Button(setRect, new GUIContent("Set")))
+                {
+                    LinksDropdown(setRect, list, phase);
+                }
+                GUILayout.EndArea();
+                for (int l = 0; l < currentPhase.runForSubInstances.Length; l++)
+                {
+                    GUILayout.BeginArea(new Rect(1f, 19f + l * 20f, linksWidth - 2f, 20f), l % 2 == 0 ? m_LineEven : m_LineOdd);
+                    EditorGUI.LabelField(new Rect(0f, 0f, linksWidth - 2f, 18f), new GUIContent(SUBINSTANCELINK_COLOR + "<b>[" + currentPhase.runForSubInstances[l].id + "]</b></color> " +
+                        ObjectNames.NicifyVariableName(currentPhase.runForSubInstances[l].title)), m_LineText);
+                    GUILayout.EndArea();
+                }
+                GUILayout.EndArea();
+            }
+            else
+            {
+                m_Ability.phaseLists[list].phases[phase].runForSubInstances = new SubInstanceLink[] { m_Ability.subInstanceLinks[0] };
+            }
+
+            GUILayout.EndArea();
+        }
+
 
 
         // <>-------------------<Calls>-------------------<>
+
+        void HandlePhaseContextMenu(Rect rect, int list, int phase)
+        {
+            Phases.PhaseCore currentPhase = m_Ability.phaseLists[list].phases[phase];
+            Event e = Event.current;
+
+            if (e.isMouse && e.button == 1 && e.type == EventType.MouseDown)
+            {
+                if (rect.Contains(e.mousePosition))
+                {
+                    GenericMenu menu = new GenericMenu();
+                    Phases.PhaseCore selection = currentPhase;
+                    if (currentPhase == m_SelectedPhase)
+                    {
+                        menu.AddItem(new GUIContent("Deselect"), false, delegate ()
+                        {
+                            m_SelectedPhase = null;
+                            Repaint();
+                        });
+                    }
+                    else
+                    {
+                        menu.AddItem(new GUIContent("Select"), false, delegate ()
+                        {
+                            m_SelectedPhase = currentPhase;
+                            Repaint();
+                        });
+                    }
+                    if (m_SelectedPhase != null && m_SelectedPhase != currentPhase)
+                    {
+                        menu.AddItem(new GUIContent("Move Selected Above"), false, delegate () { MoveSelectedPhaseTo(list, phase); });
+                    }
+                    else
+                    {
+                        menu.AddItem(new GUIContent("Move Selected Above"), false, null);
+                    }
+                    if (m_SelectedPhase != null && m_SelectedPhase != currentPhase && phase < m_Ability.phaseLists[list].phases.Length)
+                    {
+                        menu.AddItem(new GUIContent("Move Selected Below"), false, delegate () { MoveSelectedPhaseTo(list, phase + 1); });
+                    }
+                    else
+                    {
+                        menu.AddItem(new GUIContent("Move Selected Below"), false, null);
+                    }
+                    menu.AddSeparator("");
+                    InsertPhasesDropdown(menu, "Insert Above", list, phase);
+                    InsertPhasesDropdown(menu, "Insert Below", list, phase + 1);
+                    menu.AddSeparator("");
+                    if (phase > 0)
+                    {
+                        menu.AddItem(new GUIContent("Move Up\t(Shift + Up)"), false, delegate () { MovePhaseUp(list, phase); });
+                    }
+                    else
+                    {
+                        menu.AddItem(new GUIContent("Move Up\t(Shift + Up)"), false, null);
+                    }
+                    if (phase < m_Ability.phaseLists[list].phases.Length - 1)
+                    {
+                        menu.AddItem(new GUIContent("Move Down\t(Shift + Down)"), false, delegate () { MovePhaseDown(list, phase); });
+                    }
+                    else
+                    {
+                        menu.AddItem(new GUIContent("Move Down\t(Shift + Down)"), false, null);
+                    }
+                    if (list > 0)
+                    {
+                        menu.AddItem(new GUIContent("Move Left\t(Shift + Left)"), false, delegate () { MovePhaseLeft(list, phase); });
+                    }
+                    else
+                    {
+                        menu.AddItem(new GUIContent("Move Left\t(Shift + Left)"), false, null);
+                    }
+                    if (list < m_Ability.phaseLists.Length - 1)
+                    {
+                        menu.AddItem(new GUIContent("Move Right\t(Shift + Right)"), false, delegate () { MovePhaseRight(list, phase); });
+                    }
+                    else
+                    {
+                        menu.AddItem(new GUIContent("Move Right\t(Shift + Right)"), false, null);
+                    }
+                    menu.ShowAsContext();
+                }
+            }
+        }
+
+        void HandlePhaseShortcuts(int list, int phase)
+        {
+            Phases.PhaseCore currentPhase = m_Ability.phaseLists[list].phases[phase];
+            Event e = Event.current;
+
+            if (e.isKey && e.type == EventType.KeyDown && m_SelectedPhase == currentPhase)
+            {
+                switch (e.keyCode)
+                {
+                    case KeyCode.Delete:
+                        {
+                            m_SelectedPhase = null;
+                            OnRepaint = delegate ()
+                            {
+                                RemovePhaseAt(list, phase);
+                                OnRepaint = null;
+                            };
+                            Repaint();
+                        }
+                        break;
+                    case KeyCode.UpArrow:
+                        {
+                            if (!(phase > 0))
+                            {
+                                break;
+                            }
+                            if (e.shift)
+                            {
+                                OnRepaint = delegate ()
+                                {
+                                    MovePhaseUp(list, phase);
+                                    OnRepaint = null;
+                                };
+                                Repaint();
+                            }
+                            else
+                            {
+                                OnRepaint = delegate ()
+                                {
+                                    MoveSelectionUp(list, phase);
+                                    OnRepaint = null;
+                                };
+                                Repaint();
+                            }
+                        }
+                        break;
+                    case KeyCode.DownArrow:
+                        {
+                            if (!(phase < m_Ability.phaseLists[list].phases.Length - 1))
+                            {
+                                break;
+                            }
+                            if (e.shift)
+                            {
+                                OnRepaint = delegate ()
+                                {
+                                    MovePhaseDown(list, phase);
+                                    OnRepaint = null;
+                                };
+                                Repaint();
+                            }
+                            else
+                            {
+                                OnRepaint = delegate ()
+                                {
+                                    MoveSelectionDown(list, phase);
+                                    OnRepaint = null;
+                                };
+                                Repaint();
+                            }
+                        }
+                        break;
+                    case KeyCode.LeftArrow:
+                        {
+                            if (e.shift)
+                            {
+                                OnRepaint = delegate ()
+                                {
+                                    MovePhaseLeft(list, phase);
+                                    OnRepaint = null;
+                                };
+                                Repaint();
+                            }
+                            else
+                            {
+                                OnRepaint = delegate ()
+                                {
+                                    MoveSelectionLeft(list, phase);
+                                    OnRepaint = null;
+                                };
+                                Repaint();
+                            }
+                        }
+                        break;
+                    case KeyCode.RightArrow:
+                        {
+                            if (e.shift)
+                            {
+                                OnRepaint = delegate ()
+                                {
+                                    MovePhaseRight(list, phase);
+                                    OnRepaint = null;
+                                };
+                                Repaint();
+                            }
+                            else
+                            {
+                                OnRepaint = delegate ()
+                                {
+                                    MoveSelectionRight(list, phase);
+                                    OnRepaint = null;
+                                };
+                                Repaint();
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+
+        void MoveSelectedPhaseTo(int list, int phase)
+        {
+            if (m_SelectedPhase == null)
+            {
+                return;
+            }
+
+            int selectedList = -1;
+            int selectedPhase = -1;
+            for (int l = 0; l < m_Ability.phaseLists.Length; l++)
+            {
+                for (int p = 0; p < m_Ability.phaseLists[l].phases.Length; p++)
+                {
+                    if (m_Ability.phaseLists[l].phases[p] == m_SelectedPhase)
+                    {
+                        selectedList = l;
+                        selectedPhase = p;
+                    }
+                }
+            }
+
+            if (selectedPhase == -1 || selectedList == -1)
+            {
+                return;
+            }
+
+            MovePhaseTo(selectedList, selectedPhase, list, phase);
+        }
+
+        void MovePhaseTo(int inputList, int inputPhase, int outputList, int outputPhase)
+        {
+            if (inputList != outputList)
+            {
+                Phases.PhaseCore currentPhase = m_Ability.phaseLists[inputList].phases[inputPhase];
+                List<Phases.PhaseCore> tempInputList = new List<Phases.PhaseCore>(m_Ability.phaseLists[inputList].phases);
+                List<Phases.PhaseCore> tempOutputList = new List<Phases.PhaseCore>(m_Ability.phaseLists[outputList].phases);
+                tempInputList.RemoveAt(inputPhase);
+                tempOutputList.Insert(outputPhase, currentPhase);
+                m_Ability.phaseLists[inputList].phases = tempInputList.ToArray();
+                m_Ability.phaseLists[outputList].phases = tempOutputList.ToArray();
+            }
+            else
+            {
+                if (inputPhase < outputPhase)
+                {
+                    Phases.PhaseCore currentPhase = m_Ability.phaseLists[inputList].phases[inputPhase];
+                    List<Phases.PhaseCore> tempList = new List<Phases.PhaseCore>(m_Ability.phaseLists[inputList].phases);
+                    tempList.RemoveAt(inputPhase);
+                    tempList.Insert(outputPhase - 1, currentPhase);
+                    m_Ability.phaseLists[inputList].phases = tempList.ToArray();
+                }
+                else
+                {
+                    Phases.PhaseCore currentPhase = m_Ability.phaseLists[inputList].phases[inputPhase];
+                    List<Phases.PhaseCore> tempList = new List<Phases.PhaseCore>(m_Ability.phaseLists[inputList].phases);
+                    tempList.RemoveAt(inputPhase);
+                    tempList.Insert(outputPhase, currentPhase);
+                    m_Ability.phaseLists[inputList].phases = tempList.ToArray();
+                }
+            }
+        }
+
+        void MovePhaseUp(int list, int phase)
+        {
+            if (phase <= 0)
+            {
+                return;
+            }
+            Phases.PhaseCore currentPhase = m_Ability.phaseLists[list].phases[phase];
+            List<Phases.PhaseCore> tempList = new List<Phases.PhaseCore>(m_Ability.phaseLists[list].phases);
+            tempList.RemoveAt(phase);
+            tempList.Insert(phase - 1, currentPhase);
+            m_Ability.phaseLists[list].phases = tempList.ToArray();
+        }
+
+        void MoveSelectionUp(int list, int phase)
+        {
+            if (phase <= 0)
+            {
+                return;
+            }
+            m_SelectedPhase = m_Ability.phaseLists[list].phases[phase - 1];
+        }
+
+        void MovePhaseDown(int list, int phase)
+        {
+            if (phase >= m_Ability.phaseLists[list].phases.Length - 1)
+            {
+                return;
+            }
+            Phases.PhaseCore currentPhase = m_Ability.phaseLists[list].phases[phase];
+            List<Phases.PhaseCore> tempList = new List<Phases.PhaseCore>(m_Ability.phaseLists[list].phases);
+            tempList.RemoveAt(phase);
+            tempList.Insert(phase + 1, currentPhase);
+            m_Ability.phaseLists[list].phases = tempList.ToArray();
+        }
+
+        void MoveSelectionDown(int list, int phase)
+        {
+            if (phase >= m_Ability.phaseLists[list].phases.Length - 1)
+            {
+                return;
+            }
+            m_SelectedPhase = m_Ability.phaseLists[list].phases[phase + 1];
+        }
+
+        void MovePhaseLeft(int list, int phase)
+        {
+            if (list <= 0)
+            {
+                return;
+            }
+            Phases.PhaseCore currentPhase = m_Ability.phaseLists[list].phases[phase];
+
+            int targetIndex = Mathf.Clamp(phase, 0, m_Ability.phaseLists[list - 1].phases.Length - 1);
+            if (targetIndex < 0)
+            {
+                targetIndex = 0;
+            }
+            List<Phases.PhaseCore> tempOriginList = new List<Phases.PhaseCore>(m_Ability.phaseLists[list].phases);
+            List<Phases.PhaseCore> tempTargetList = new List<Phases.PhaseCore>(m_Ability.phaseLists[list - 1].phases);
+            tempOriginList.RemoveAt(phase);
+            tempTargetList.Insert(targetIndex, currentPhase);
+            m_Ability.phaseLists[list].phases = tempOriginList.ToArray();
+            m_Ability.phaseLists[list - 1].phases = tempTargetList.ToArray();
+        }
+
+        void MoveSelectionLeft(int list, int phase)
+        {
+            if (list <= 0)
+            {
+                return;
+            }
+            int targetListIndex = list;
+            for (int l = list - 1; l >= 0; l--)
+            {
+                if (targetListIndex == list && m_Ability.phaseLists[l].phases.Length > 0)
+                {
+                    targetListIndex = l;
+                }
+            }
+            phase = Mathf.Clamp(phase, 0, m_Ability.phaseLists[targetListIndex].phases.Length - 1);
+            m_SelectedPhase = m_Ability.phaseLists[targetListIndex].phases[phase];
+        }
+
+        void MovePhaseRight(int list, int phase)
+        {
+            if (list >= m_Ability.phaseLists.Length - 1)
+            {
+                return;
+            }
+            Phases.PhaseCore currentPhase = m_Ability.phaseLists[list].phases[phase];
+
+            int targetIndex = Mathf.Clamp(phase, 0, m_Ability.phaseLists[list + 1].phases.Length - 1);
+            if (targetIndex < 0)
+            {
+                targetIndex = 0;
+            }
+            List<Phases.PhaseCore> tempOriginList = new List<Phases.PhaseCore>(m_Ability.phaseLists[list].phases);
+            List<Phases.PhaseCore> tempTargetList = new List<Phases.PhaseCore>(m_Ability.phaseLists[list + 1].phases);
+            tempOriginList.RemoveAt(phase);
+            tempTargetList.Insert(targetIndex, currentPhase);
+            m_Ability.phaseLists[list].phases = tempOriginList.ToArray();
+            m_Ability.phaseLists[list + 1].phases = tempTargetList.ToArray();
+        }
+
+        void MoveSelectionRight(int list, int phase)
+        {
+            if (list >= m_Ability.phaseLists.Length - 1)
+            {
+                return;
+            }
+            int targetListIndex = list;
+            for (int l = list + 1; l < m_Ability.phaseLists.Length; l++)
+            {
+                if (targetListIndex == list && m_Ability.phaseLists[l].phases.Length > 0)
+                {
+                    targetListIndex = l;
+                }
+            }
+            phase = Mathf.Clamp(phase, 0, m_Ability.phaseLists[targetListIndex].phases.Length - 1);
+            m_SelectedPhase = m_Ability.phaseLists[targetListIndex].phases[phase];
+        }
 
         void LinksDropdown(Rect pos, int list, int phase)
         {
@@ -1584,6 +1990,45 @@ namespace Matki.AbilityDesigner.Edit
             menu.DropDown(pos);
         }
 
+        void InsertPhasesDropdown(GenericMenu menu, string path, int list, int phase)
+        {
+            string[] guids = AssetDatabase.FindAssets("t:MonoScript");
+            SortedDictionary<string, System.Type> types = new SortedDictionary<string, System.Type>();
+            for (int g = 0; g < guids.Length; g++)
+            {
+                MonoScript script = AssetDatabase.LoadAssetAtPath<MonoScript>(AssetDatabase.GUIDToAssetPath(guids[g]));
+                System.Type scriptType = script.GetClass();
+                if (scriptType != null && scriptType.IsSubclassOf(typeof(Phases.PhaseCore)) && !scriptType.IsAbstract)
+                {
+                    string menuName = scriptType.Name;
+                    PhaseCategoryAttribute category = scriptType.GetCustomAttribute<PhaseCategoryAttribute>(true);
+                    if (category != null)
+                    {
+                        menuName = category.path + "/" + menuName;
+                    }
+
+                    types.Add(menuName, scriptType);
+                }
+            }
+            
+            foreach (KeyValuePair<string, System.Type> pair in types)
+            {
+                int index = list;
+
+                menu.AddItem(new GUIContent(path + "/" + pair.Key), false, delegate () { InsertPhaseOfType(pair.Value, index, phase); });
+            }
+        }
+
+        private void InsertPhaseOfType(System.Type type, int list, int index)
+        {
+            List<Phases.PhaseCore> phases = new List<Phases.PhaseCore>(m_Ability.phaseLists[list].phases);
+            Phases.PhaseCore phase = (Phases.PhaseCore)CreateInstance(type);
+            phases.Insert(index, phase);
+            m_Ability.phaseLists[list].phases = phases.ToArray();
+            AssetDatabase.AddObjectToAsset(phase, m_Ability);
+            m_EditorHeight = GetMaxHeight();
+        }
+
         private void AddPhaseOfType(System.Type type, int list)
         {
             List<Phases.PhaseCore> phases = new List<Phases.PhaseCore>(m_Ability.phaseLists[list].phases);
@@ -1602,6 +2047,12 @@ namespace Matki.AbilityDesigner.Edit
             DestroyImmediate(phase, true);
             m_Ability.phaseLists[list].phases = phases.ToArray();
             m_EditorHeight = GetMaxHeight();
+
+            index = Mathf.Clamp(index, 0, m_Ability.phaseLists[list].phases.Length - 1);
+            if (index >= 0)
+            {
+                m_SelectedPhase = m_Ability.phaseLists[list].phases[index];
+            }
         }
 
 
