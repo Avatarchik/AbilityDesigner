@@ -534,7 +534,7 @@ namespace Matki.AbilityDesigner.Edit
         {
             Event e = Event.current;
             if (GUILayout.Button(new GUIContent("General"), m_CurrentlyActive == Tab.General ? m_ToolbarButtonSelected : m_ToolbarButton)
-                || (e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha1))
+                || (e.control && e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha1))
             {
                 OnRepaint = delegate ()
                 {
@@ -544,7 +544,7 @@ namespace Matki.AbilityDesigner.Edit
                 Repaint();
             }
             if (GUILayout.Button(new GUIContent("Structure"), m_CurrentlyActive == Tab.Structure ? m_ToolbarButtonSelected : m_ToolbarButton)
-                || (e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha2))
+                || (e.control && e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha2))
             {
                 OnRepaint = delegate ()
                 {
@@ -554,7 +554,7 @@ namespace Matki.AbilityDesigner.Edit
                 Repaint();
             }
             if (GUILayout.Button(new GUIContent("Variables"), m_CurrentlyActive == Tab.Variables ? m_ToolbarButtonSelected : m_ToolbarButton)
-                || (e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha3))
+                || (e.control && e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha3))
             {
                 OnRepaint = delegate ()
                 {
@@ -564,7 +564,7 @@ namespace Matki.AbilityDesigner.Edit
                 Repaint();
             }
             if (GUILayout.Button(new GUIContent("Inspector"), m_CurrentlyActive == Tab.Inspector ? m_ToolbarButtonSelected : m_ToolbarButton)
-                || (e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha4))
+                || (e.control && e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha4))
             {
                 OnRepaint = delegate ()
                 {
@@ -1449,7 +1449,7 @@ namespace Matki.AbilityDesigner.Edit
                 }
             }
             HandlePhaseContextMenu(mouseRect, list, phase);
-            HandlePhaseShortcuts(list, phase);
+            HandlePhaseShortcuts(mouseRect, list, phase);
 
             Rect iconRect = rect;
             Rect titleRect = rect;
@@ -1570,157 +1570,189 @@ namespace Matki.AbilityDesigner.Edit
                     menu.AddSeparator("");
                     if (phase > 0)
                     {
-                        menu.AddItem(new GUIContent("Move Up\t(Shift + Up)"), false, delegate () { MovePhaseUp(list, phase); });
+                        menu.AddItem(new GUIContent("Move Up\tShift + Up"), false, delegate () { MovePhaseUp(list, phase); });
                     }
                     else
                     {
-                        menu.AddItem(new GUIContent("Move Up\t(Shift + Up)"), false, null);
+                        menu.AddItem(new GUIContent("Move Up\tShift + Up"), false, null);
                     }
                     if (phase < m_Ability.phaseLists[list].phases.Length - 1)
                     {
-                        menu.AddItem(new GUIContent("Move Down\t(Shift + Down)"), false, delegate () { MovePhaseDown(list, phase); });
+                        menu.AddItem(new GUIContent("Move Down\tShift + Down"), false, delegate () { MovePhaseDown(list, phase); });
                     }
                     else
                     {
-                        menu.AddItem(new GUIContent("Move Down\t(Shift + Down)"), false, null);
+                        menu.AddItem(new GUIContent("Move Down\tShift + Down"), false, null);
                     }
                     if (list > 0)
                     {
-                        menu.AddItem(new GUIContent("Move Left\t(Shift + Left)"), false, delegate () { MovePhaseLeft(list, phase); });
+                        menu.AddItem(new GUIContent("Move Left\tShift + Left"), false, delegate () { MovePhaseLeft(list, phase); });
                     }
                     else
                     {
-                        menu.AddItem(new GUIContent("Move Left\t(Shift + Left)"), false, null);
+                        menu.AddItem(new GUIContent("Move Left\tShift + Left"), false, null);
                     }
                     if (list < m_Ability.phaseLists.Length - 1)
                     {
-                        menu.AddItem(new GUIContent("Move Right\t(Shift + Right)"), false, delegate () { MovePhaseRight(list, phase); });
+                        menu.AddItem(new GUIContent("Move Right\tShift + Right"), false, delegate () { MovePhaseRight(list, phase); });
                     }
                     else
                     {
-                        menu.AddItem(new GUIContent("Move Right\t(Shift + Right)"), false, null);
+                        menu.AddItem(new GUIContent("Move Right\tShift + Right"), false, null);
                     }
+                    menu.AddSeparator("");
+                    menu.AddItem(new GUIContent("Remove\t" + (m_SelectedPhase == currentPhase ? "Del" : "Shift + Del")), false, delegate () { RemovePhaseAt(list, phase); Repaint(); });
                     menu.ShowAsContext();
                 }
             }
         }
 
-        void HandlePhaseShortcuts(int list, int phase)
+        void HandlePhaseShortcuts(Rect rect, int list, int phase)
         {
             Phases.PhaseCore currentPhase = m_Ability.phaseLists[list].phases[phase];
             Event e = Event.current;
 
-            if (e.isKey && e.type == EventType.KeyDown && m_SelectedPhase == currentPhase)
+
+            if (e.isKey && e.type == EventType.KeyDown)
             {
-                switch (e.keyCode)
+                if (m_SelectedPhase != currentPhase)
                 {
-                    case KeyCode.Delete:
+                    // Shortcuts for hovered node
+                    if (rect.Contains(e.mousePosition))
+                    {
+                        switch (e.keyCode)
                         {
-                            m_SelectedPhase = null;
-                            OnRepaint = delegate ()
-                            {
-                                RemovePhaseAt(list, phase);
-                                OnRepaint = null;
-                            };
-                            Repaint();
-                        }
-                        break;
-                    case KeyCode.UpArrow:
-                        {
-                            if (!(phase > 0))
-                            {
+                            case KeyCode.Delete:
+                                {
+                                    if (e.shift)
+                                    {
+                                        OnRepaint = delegate ()
+                                        {
+                                            RemovePhaseAt(list, phase, false);
+                                            OnRepaint = null;
+                                        };
+                                        Repaint();
+                                    }
+                                }
                                 break;
-                            }
-                            if (e.shift)
-                            {
-                                OnRepaint = delegate ()
-                                {
-                                    MovePhaseUp(list, phase);
-                                    OnRepaint = null;
-                                };
-                                Repaint();
-                            }
-                            else
-                            {
-                                OnRepaint = delegate ()
-                                {
-                                    MoveSelectionUp(list, phase);
-                                    OnRepaint = null;
-                                };
-                                Repaint();
-                            }
                         }
-                        break;
-                    case KeyCode.DownArrow:
-                        {
-                            if (!(phase < m_Ability.phaseLists[list].phases.Length - 1))
+                    }
+                }
+                else
+                {
+                    // Shortcuts for selected node
+                    switch (e.keyCode)
+                    {
+                        case KeyCode.Delete:
                             {
-                                break;
-                            }
-                            if (e.shift)
-                            {
-                                OnRepaint = delegate ()
+                                if (!e.shift || rect.Contains(e.mousePosition))
                                 {
-                                    MovePhaseDown(list, phase);
-                                    OnRepaint = null;
-                                };
-                                Repaint();
+                                    OnRepaint = delegate ()
+                                    {
+                                        RemovePhaseAt(list, phase);
+                                        OnRepaint = null;
+                                    };
+                                    Repaint();
+                                }
                             }
-                            else
+                            break;
+                        case KeyCode.UpArrow:
                             {
-                                OnRepaint = delegate ()
+                                if (!(phase > 0))
                                 {
-                                    MoveSelectionDown(list, phase);
-                                    OnRepaint = null;
-                                };
-                                Repaint();
+                                    break;
+                                }
+                                if (e.shift)
+                                {
+                                    OnRepaint = delegate ()
+                                    {
+                                        MovePhaseUp(list, phase);
+                                        OnRepaint = null;
+                                    };
+                                    Repaint();
+                                }
+                                else
+                                {
+                                    OnRepaint = delegate ()
+                                    {
+                                        MoveSelectionUp(list, phase);
+                                        OnRepaint = null;
+                                    };
+                                    Repaint();
+                                }
                             }
-                        }
-                        break;
-                    case KeyCode.LeftArrow:
-                        {
-                            if (e.shift)
+                            break;
+                        case KeyCode.DownArrow:
                             {
-                                OnRepaint = delegate ()
+                                if (!(phase < m_Ability.phaseLists[list].phases.Length - 1))
                                 {
-                                    MovePhaseLeft(list, phase);
-                                    OnRepaint = null;
-                                };
-                                Repaint();
+                                    break;
+                                }
+                                if (e.shift)
+                                {
+                                    OnRepaint = delegate ()
+                                    {
+                                        MovePhaseDown(list, phase);
+                                        OnRepaint = null;
+                                    };
+                                    Repaint();
+                                }
+                                else
+                                {
+                                    OnRepaint = delegate ()
+                                    {
+                                        MoveSelectionDown(list, phase);
+                                        OnRepaint = null;
+                                    };
+                                    Repaint();
+                                }
                             }
-                            else
+                            break;
+                        case KeyCode.LeftArrow:
                             {
-                                OnRepaint = delegate ()
+                                if (e.shift)
                                 {
-                                    MoveSelectionLeft(list, phase);
-                                    OnRepaint = null;
-                                };
-                                Repaint();
+                                    OnRepaint = delegate ()
+                                    {
+                                        MovePhaseLeft(list, phase);
+                                        OnRepaint = null;
+                                    };
+                                    Repaint();
+                                }
+                                else
+                                {
+                                    OnRepaint = delegate ()
+                                    {
+                                        MoveSelectionLeft(list, phase);
+                                        OnRepaint = null;
+                                    };
+                                    Repaint();
+                                }
                             }
-                        }
-                        break;
-                    case KeyCode.RightArrow:
-                        {
-                            if (e.shift)
+                            break;
+                        case KeyCode.RightArrow:
                             {
-                                OnRepaint = delegate ()
+                                if (e.shift)
                                 {
-                                    MovePhaseRight(list, phase);
-                                    OnRepaint = null;
-                                };
-                                Repaint();
-                            }
-                            else
-                            {
-                                OnRepaint = delegate ()
+                                    OnRepaint = delegate ()
+                                    {
+                                        MovePhaseRight(list, phase);
+                                        OnRepaint = null;
+                                    };
+                                    Repaint();
+                                }
+                                else
                                 {
-                                    MoveSelectionRight(list, phase);
-                                    OnRepaint = null;
-                                };
-                                Repaint();
+                                    OnRepaint = delegate ()
+                                    {
+                                        MoveSelectionRight(list, phase);
+                                        OnRepaint = null;
+                                    };
+                                    Repaint();
+                                }
                             }
-                        }
-                        break;
+                            break;
+                    }
                 }
             }
         }
@@ -2039,19 +2071,27 @@ namespace Matki.AbilityDesigner.Edit
             m_EditorHeight = GetMaxHeight();
         }
 
-        private void RemovePhaseAt(int list, int index)
+        private void RemovePhaseAt(int list, int index, bool selectionChange = true)
         {
             List<Phases.PhaseCore> phases = new List<Phases.PhaseCore>(m_Ability.phaseLists[list].phases);
             Phases.PhaseCore phase = phases[index];
+            bool autoselect = m_SelectedPhase == phase;
             phases.RemoveAt(index);
             DestroyImmediate(phase, true);
             m_Ability.phaseLists[list].phases = phases.ToArray();
             m_EditorHeight = GetMaxHeight();
 
-            index = Mathf.Clamp(index, 0, m_Ability.phaseLists[list].phases.Length - 1);
-            if (index >= 0)
+            if (selectionChange)
             {
-                m_SelectedPhase = m_Ability.phaseLists[list].phases[index];
+                m_SelectedPhase = null;
+            }
+            if (autoselect)
+            {
+                index = Mathf.Clamp(index, 0, m_Ability.phaseLists[list].phases.Length - 1);
+                if (index >= 0)
+                {
+                    m_SelectedPhase = m_Ability.phaseLists[list].phases[index];
+                }
             }
         }
 
