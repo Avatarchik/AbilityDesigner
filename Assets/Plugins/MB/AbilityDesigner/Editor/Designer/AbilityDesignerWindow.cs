@@ -534,7 +534,7 @@ namespace Matki.AbilityDesigner.Edit
         {
             Event e = Event.current;
             if (GUILayout.Button(new GUIContent("General"), m_CurrentlyActive == Tab.General ? m_ToolbarButtonSelected : m_ToolbarButton)
-                || (e.control && e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha1))
+                || (e.shift && e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Q))
             {
                 OnRepaint = delegate ()
                 {
@@ -544,7 +544,7 @@ namespace Matki.AbilityDesigner.Edit
                 Repaint();
             }
             if (GUILayout.Button(new GUIContent("Structure"), m_CurrentlyActive == Tab.Structure ? m_ToolbarButtonSelected : m_ToolbarButton)
-                || (e.control && e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha2))
+                || (e.shift && e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.W))
             {
                 OnRepaint = delegate ()
                 {
@@ -554,7 +554,7 @@ namespace Matki.AbilityDesigner.Edit
                 Repaint();
             }
             if (GUILayout.Button(new GUIContent("Variables"), m_CurrentlyActive == Tab.Variables ? m_ToolbarButtonSelected : m_ToolbarButton)
-                || (e.control && e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha3))
+                || (e.shift && e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.E))
             {
                 OnRepaint = delegate ()
                 {
@@ -564,7 +564,7 @@ namespace Matki.AbilityDesigner.Edit
                 Repaint();
             }
             if (GUILayout.Button(new GUIContent("Inspector"), m_CurrentlyActive == Tab.Inspector ? m_ToolbarButtonSelected : m_ToolbarButton)
-                || (e.control && e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Alpha4))
+                || (e.shift && e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.R))
             {
                 OnRepaint = delegate ()
                 {
