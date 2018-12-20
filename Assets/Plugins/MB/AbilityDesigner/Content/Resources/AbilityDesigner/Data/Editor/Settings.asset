@@ -12,3 +12,59 @@ MonoBehaviour:
   m_Name: Settings
   m_EditorClassIdentifier: 
   m_EditorSkin: {fileID: 11400000, guid: ea0f7888e3ab6d444bf60d04a63827fb, type: 2}
+  m_GeneralTabShortcut:
+    m_ControlKey: 2
+    m_Key: 113
+    m_Error: 0
+  m_StructureTabShortcut:
+    m_ControlKey: 2
+    m_Key: 119
+    m_Error: 0
+  m_VariablesTabShortcut:
+    m_ControlKey: 2
+    m_Key: 101
+    m_Error: 0
+  m_InspectorTabShortcut:
+    m_ControlKey: 2
+    m_Key: 114
+    m_Error: 0
+  m_MoveLeftShortcut:
+    m_ControlKey: 2
+    m_Key: 276
+    m_Error: 0
+  m_MoveRightShortcut:
+    m_ControlKey: 2
+    m_Key: 275
+    m_Error: 0
+  m_MoveUpShortcut:
+    m_ControlKey: 2
+    m_Key: 273
+    m_Error: 0
+  m_MoveDownShortcut:
+    m_ControlKey: 2
+    m_Key: 274
+    m_Error: 0
+  m_MoveSelectionLeftShortcut:
+    m_ControlKey: 0
+    m_Key: 276
+    m_Error: 0
+  m_MoveSelectionRightShortcut:
+    m_ControlKey: 0
+    m_Key: 275
+    m_Error: 0
+  m_MoveSelectionUpShortcut:
+    m_ControlKey: 0
+    m_Key: 273
+    m_Error: 0
+  m_MoveSelectionDownShortcut:
+    m_ControlKey: 0
+    m_Key: 274
+    m_Error: 0
+  m_DeleteSelectedShortcut:
+    m_ControlKey: 0
+    m_Key: 127
+    m_Error: 0
+  m_DeleteHoveredShortcut:
+    m_ControlKey: 2
+    m_Key: 127
+    m_Error: 0

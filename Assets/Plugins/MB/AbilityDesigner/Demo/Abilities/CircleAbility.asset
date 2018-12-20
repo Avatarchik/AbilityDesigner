@@ -23,10 +23,14 @@ MonoBehaviour:
     m_Title: Start List
     m_Instant: 0
     m_Phases:
-    - {fileID: 114897501813618978}
+    - {fileID: 114182735760499252}
   - m_ID: 1
     m_Title: Collision Check
     m_Instant: 1
+    m_Phases: []
+  - m_ID: 2
+    m_Title: New List
+    m_Instant: 0
     m_Phases: []
   m_SubInstanceLinks:
   - {fileID: 114140205885463556}
@@ -63,6 +67,44 @@ MonoBehaviour:
   m_Spawn: 0
   m_SpawnOffset: {x: 0, y: 0, z: 0}
   m_Obj: {fileID: 1606722856494212, guid: 44f522638a6dc664290bcd5f6363380d, type: 2}
+--- !u!114 &114182735760499252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f61bab76ca7fce14e8146986480b7108, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CustomTitle: 
+  m_CustomColor: {r: 1, g: 1, b: 1, a: 1}
+  m_Instant: 0
+  m_BreakOnFail: 0
+  m_RunForSubInstances:
+  - {fileID: 114140205885463556}
+  - {fileID: 114584107796389484}
+  m_Target:
+    m_Keys: 0000000001000000
+    m_Values: 0100000000000000
+  m_SpeedPerInstance:
+    m_Keys: 0000000001000000
+    m_Values:
+    - 90
+    - 90
+  m_Side:
+    m_Keys: 0000000001000000
+    m_Values:
+    - 1
+    - 1
+  m_DetectGround: 1
+  m_GroundLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  m_GroundOffset: 1
+  m_RunWhile:
+    m_ID: -1
 --- !u!114 &114203830274153748
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,44 +137,6 @@ MonoBehaviour:
   m_Spawn: 1
   m_SpawnOffset: {x: 0, y: 0, z: 0}
   m_Obj: {fileID: 1606722856494212, guid: 44f522638a6dc664290bcd5f6363380d, type: 2}
---- !u!114 &114897501813618978
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f61bab76ca7fce14e8146986480b7108, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_CustomTitle: 
-  m_CustomColor: {r: 1, g: 1, b: 1, a: 1}
-  m_Instant: 0
-  m_BreakOnFail: 0
-  m_RunForSubInstances:
-  - {fileID: 114140205885463556}
-  - {fileID: 114584107796389484}
-  m_Target:
-    m_Keys: 0000000001000000
-    m_Values: 0100000000000000
-  m_SpeedPerInstance:
-    m_Keys: 0000000001000000
-    m_Values:
-    - 70
-    - 70
-  m_Side:
-    m_Keys: 0000000001000000
-    m_Values:
-    - 1
-    - 1
-  m_DetectGround: 1
-  m_GroundLayer:
-    serializedVersion: 2
-    m_Bits: 512
-  m_GroundOffset: 0.5
-  m_RunWhile:
-    m_ID: 1
 --- !u!114 &114917271851879404
 MonoBehaviour:
   m_ObjectHideFlags: 0

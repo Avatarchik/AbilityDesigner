@@ -132,6 +132,7 @@ namespace Matki.AbilityDesigner.Edit
         {
             titleContent = new GUIContent("Ability Designer Settings");
             minSize = maxSize = new Vector2(600f, 400f);
+            CheckForShortcutErrors();
         }
 
         private void OnGUI()
@@ -212,18 +213,80 @@ namespace Matki.AbilityDesigner.Edit
         {
             EditorSettings settings = EditorSettings.INSTANCE;
             EditorGUI.BeginChangeCheck();
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel(new GUIContent("Editor Skin"));
             Rect buttonRect = GUILayoutUtility.GetRect(new GUIContent(""), EditorStyles.popup);
             if (GUI.Button(buttonRect, new GUIContent(EditorSettings.INSTANCE.editorSkin.title), EditorStyles.popup))
             {
                 EditorSkinsDropdown(buttonRect);
             }
-            EditorGUILayout.BeginVertical();
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            EditorGUILayout.LabelField(new GUIContent("Shortcuts"));
+            EditorGUILayout.Space();
+            ShortcutField(new GUIContent("General Tab"), settings.generalTabShortcut);
+            ShortcutField(new GUIContent("Structure Tab"), settings.structureTabShortcut);
+            ShortcutField(new GUIContent("Variables Tab"), settings.variablesTabShortcut);
+            ShortcutField(new GUIContent("Inspector Tab"), settings.inspectorTabShortcut);
+            EditorGUILayout.Space();
+            ShortcutField(new GUIContent("Move Selection Left"), settings.moveSelectionLeftShortcut);
+            ShortcutField(new GUIContent("Move Selection Right"), settings.moveSelectionRightShortcut);
+            ShortcutField(new GUIContent("Move Selection Up"), settings.moveSelectionUpShortcut);
+            ShortcutField(new GUIContent("Move Selection Down"), settings.moveSelectionDownShortcut);
+            EditorGUILayout.Space();
+            ShortcutField(new GUIContent("Move Left"), settings.moveLeftShortcut);
+            ShortcutField(new GUIContent("Move Right"), settings.moveRightShortcut);
+            ShortcutField(new GUIContent("Move Up"), settings.moveUpShortcut);
+            ShortcutField(new GUIContent("Move Down"), settings.moveDownShortcut);
+            EditorGUILayout.Space();
+            ShortcutField(new GUIContent("Delete Selected"), settings.deleteSelectedShortcut);
+            ShortcutField(new GUIContent("Delete Hovered"), settings.deleteHoveredShortcut);
             EditorGUILayout.EndVertical();
+            EditorGUILayout.Space();
             if (EditorGUI.EndChangeCheck())
             {
+                CheckForShortcutErrors();
                 EditorUtility.SetDirty(settings);
                 AbilityDesignerWindow.OrderSkinChange();
                 Focus();
+            }
+        }
+
+        void ShortcutField(GUIContent content, Shortcut shortcut)
+        {
+            GUI.backgroundColor = shortcut.m_Error ? Color.red : Color.white;
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel(new GUIContent(content));
+            shortcut.m_ControlKey = (Shortcut.ControlKey)EditorGUILayout.EnumPopup(shortcut.m_ControlKey);
+            shortcut.m_Key = (KeyCode)EditorGUILayout.EnumPopup(shortcut.m_Key);
+            EditorGUILayout.EndHorizontal();
+            GUI.backgroundColor = Color.white;
+        }
+
+        void CheckForShortcutErrors()
+        {
+            Shortcut[] shortcuts = EditorSettings.INSTANCE.allShortcuts;
+            for (int s = 0; s < shortcuts.Length; s++)
+            {
+                shortcuts[s].m_Error = false;
+            }
+            for (int s = 0; s < shortcuts.Length; s++)
+            {
+                for (int c = s + 1; c < shortcuts.Length; c++)
+                {
+                    if (shortcuts[s].m_Error)
+                    {
+                        continue;
+                    }
+                    bool error = shortcuts[s].Equals(shortcuts[c]);
+                    shortcuts[s].SetError(error);
+                    if (shortcuts[c].m_Error)
+                    {
+                        continue;
+                    }
+                    shortcuts[c].SetError(error);
+                }
             }
         }
 

@@ -36,7 +36,7 @@ namespace Matki.AbilityDesigner.Edit
 
         #endregion
 
-        #region Editor Settings
+        #region Skin Settings
         #if UNITY_EDITOR
         [SerializeField]
         private EditorSkin m_EditorSkin;
@@ -67,6 +67,79 @@ namespace Matki.AbilityDesigner.Edit
             return skins[0];
         }
         #endif
+        #endregion
+
+        #region Shortcut Settings
+
+        [SerializeField]
+        private Shortcut m_GeneralTabShortcut;
+        internal Shortcut generalTabShortcut { get { return m_GeneralTabShortcut; } set { m_GeneralTabShortcut = value; } }
+        [SerializeField]
+        private Shortcut m_StructureTabShortcut;
+        internal Shortcut structureTabShortcut { get { return m_StructureTabShortcut; } set { m_StructureTabShortcut = value; } }
+        [SerializeField]
+        private Shortcut m_VariablesTabShortcut;
+        internal Shortcut variablesTabShortcut { get { return m_VariablesTabShortcut; } set { m_VariablesTabShortcut = value; } }
+        [SerializeField]
+        private Shortcut m_InspectorTabShortcut;
+        internal Shortcut inspectorTabShortcut { get { return m_InspectorTabShortcut; } set { m_InspectorTabShortcut = value; } }
+
+        [SerializeField]
+        private Shortcut m_MoveLeftShortcut;
+        internal Shortcut moveLeftShortcut { get { return m_MoveLeftShortcut; } set { m_MoveLeftShortcut = value; } }
+        [SerializeField]
+        private Shortcut m_MoveRightShortcut;
+        internal Shortcut moveRightShortcut { get { return m_MoveRightShortcut; } set { m_MoveRightShortcut = value; } }
+        [SerializeField]
+        private Shortcut m_MoveUpShortcut;
+        internal Shortcut moveUpShortcut { get { return m_MoveUpShortcut; } set { m_MoveUpShortcut = value; } }
+        [SerializeField]
+        private Shortcut m_MoveDownShortcut;
+        internal Shortcut moveDownShortcut { get { return m_MoveDownShortcut; } set { m_MoveDownShortcut = value; } }
+
+        [SerializeField]
+        private Shortcut m_MoveSelectionLeftShortcut;
+        internal Shortcut moveSelectionLeftShortcut { get { return m_MoveSelectionLeftShortcut; } set { m_MoveSelectionLeftShortcut = value; } }
+        [SerializeField]
+        private Shortcut m_MoveSelectionRightShortcut;
+        internal Shortcut moveSelectionRightShortcut { get { return m_MoveSelectionRightShortcut; } set { m_MoveSelectionRightShortcut = value; } }
+        [SerializeField]
+        private Shortcut m_MoveSelectionUpShortcut;
+        internal Shortcut moveSelectionUpShortcut { get { return m_MoveSelectionUpShortcut; } set { m_MoveSelectionUpShortcut = value; } }
+        [SerializeField]
+        private Shortcut m_MoveSelectionDownShortcut;
+        internal Shortcut moveSelectionDownShortcut { get { return m_MoveSelectionDownShortcut; } set { m_MoveSelectionDownShortcut = value; } }
+
+        [SerializeField]
+        private Shortcut m_DeleteSelectedShortcut;
+        internal Shortcut deleteSelectedShortcut { get { return m_DeleteSelectedShortcut; } set { m_DeleteSelectedShortcut = value; } }
+        [SerializeField]
+        private Shortcut m_DeleteHoveredShortcut;
+        internal Shortcut deleteHoveredShortcut { get { return m_DeleteHoveredShortcut; } set { m_DeleteHoveredShortcut = value; } }
+
+        internal Shortcut[] allShortcuts
+        {
+            get
+            {
+                return new Shortcut[]
+                {
+                    generalTabShortcut,
+                    structureTabShortcut,
+                    variablesTabShortcut,
+                    inspectorTabShortcut,
+                    moveLeftShortcut,
+                    moveRightShortcut,
+                    moveUpShortcut,
+                    moveDownShortcut,
+                    moveSelectionLeftShortcut,
+                    moveSelectionRightShortcut,
+                    moveSelectionUpShortcut,
+                    moveSelectionDownShortcut,
+                    deleteSelectedShortcut,
+                    deleteHoveredShortcut
+                };
+            }
+        }
         #endregion
     }
 }
