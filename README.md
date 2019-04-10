@@ -1,6 +1,8 @@
 # AbilityDesigner
 ## Version 0.5
 
+![Editor Preview](http://marian-brinkmann.com/wp-content/uploads/2019/04/fullEditor.png)
+
 ### Introduction
 
 What is an ability? The swinging of a sword? The casting of a spell? Or is it the monster running alongside the character?
