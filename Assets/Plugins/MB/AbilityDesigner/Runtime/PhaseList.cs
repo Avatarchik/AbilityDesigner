@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Matki.AbilityDesigner
+namespace MB.AbilityDesigner
 {
     [System.Serializable]
     public class PhaseList
@@ -20,7 +20,7 @@ namespace Matki.AbilityDesigner
 
         [SerializeField]
         private Phases.PhaseCore[] m_Phases = new Phases.PhaseCore[0];
-        internal Phases.PhaseCore[] phases { get { return m_Phases; } set { m_Phases = value; } }
+        public Phases.PhaseCore[] phases { get { return m_Phases; } internal set { m_Phases = value; } }
 
         private int m_CurrentPhase;
 
@@ -77,16 +77,23 @@ namespace Matki.AbilityDesigner
 
         internal Result OnUpdate()
         {
+            Result listResult = Result.Running;
             if (instant)
             {
-                Result listResult = Result.Running;
                 while (listResult == Result.Running)
                 {
                     listResult = UpdateList();
                 }
                 return listResult;
             }
-            return UpdateList();
+
+            do
+            {
+                listResult = UpdateList();
+            }
+            while (listResult == Result.Running && phases[m_CurrentPhase].instant == true);
+
+            return listResult;
         }
 
         private Result UpdateList()
@@ -162,6 +169,18 @@ namespace Matki.AbilityDesigner
             }
 
             return clone;
+        }
+
+        public void SetCurrentPhase(Phases.PhaseCore phase)
+        {
+            for (int p = 0; p < phases.Length; p++)
+            {
+                if (phases[p] == phase)
+                {
+                    m_CurrentPhase = p;
+                    return;
+                }
+            }
         }
 
         #endregion

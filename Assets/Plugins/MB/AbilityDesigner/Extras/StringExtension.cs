@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
 
-namespace Matki.AbilityDesigner
+namespace MB.AbilityDesigner
 {
     public static class StringExtension
     {

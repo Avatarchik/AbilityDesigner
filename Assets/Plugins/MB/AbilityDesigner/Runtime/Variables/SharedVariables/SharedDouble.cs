@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Matki.AbilityDesigner
+namespace MB.AbilityDesigner
 {
     [System.Serializable]
     public class SharedDouble : SharedVariable<double>

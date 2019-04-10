@@ -4,7 +4,7 @@ using UnityEngine;
 
 using System.Reflection;
 
-namespace Matki.AbilityDesigner.Phases
+namespace MB.AbilityDesigner.Phases
 {
     [PhaseIcon("{SkinIcons}Phase")]
     public abstract class PhaseCore : ScriptableObject

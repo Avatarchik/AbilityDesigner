@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Reflection;
 
-namespace Matki.AbilityDesigner
+namespace MB.AbilityDesigner
 {
     public enum Result { Success, Fail, Running }
 
@@ -19,6 +19,14 @@ namespace Matki.AbilityDesigner
         [SerializeField]
         private Texture m_Icon;
         public Texture icon { get { return m_Icon; } internal set { m_Icon = value; } }
+
+        [SerializeField]
+        private bool m_DefaultLock = true;
+        public bool defaultLock { get { return m_DefaultLock; } internal set { m_DefaultLock = value; } }
+
+        [System.NonSerialized]
+        private bool m_Unlocked;
+        public bool unlocked { get { return m_Unlocked; } set { m_Unlocked = value; } }
 
         [SerializeField]
         private CastRule[] m_CastRules = new CastRule[0];
@@ -42,7 +50,7 @@ namespace Matki.AbilityDesigner
 
         public void Cast(IAbilityUser originator, params IAbilityUser[] targets)
         {
-            if (instanceManager == null)
+            if (instanceManager == null || !unlocked)
             {
                 return;
             }
@@ -64,7 +72,7 @@ namespace Matki.AbilityDesigner
                 {
                     return;
                 }
-                instanceManager.RequestInstance(id).Cast(originator, targets[0]);
+                instanceManager.RequestInstance(id).Cast(originator, targets[t]);
             }
         }
 
@@ -78,10 +86,30 @@ namespace Matki.AbilityDesigner
             instanceManager.ReturnInstance(id, instance);
         }
 
+        public float GetCooldownProgress(string id)
+        {
+            for (int c = 0; c < castRules.Length; c++)
+            {
+                AmunationCooldown amunationCooldown = castRules[c] as AmunationCooldown;
+                if (amunationCooldown != null)
+                {
+                    return amunationCooldown.GetProgress(instanceManager.GetCooldown(id));
+                }
+                SimpleCooldown simpleCooldown = castRules[c] as SimpleCooldown;
+                if (simpleCooldown != null)
+                {
+                    return simpleCooldown.GetProgress(instanceManager.GetCooldown(id));
+                }
+            }
+            return 1f;
+        }
+
         public GameObject CreateRuntimeInstance()
         {
             GameObject gameObject = new GameObject(title + " Runtime Instance");
             AbilityInstance instance = gameObject.AddComponent<AbilityInstance>();
+
+            m_Unlocked = m_DefaultLock;
 
             // Clone all phases to the ability instance for runtime use
             instance.phaseLists = new PhaseList[phaseLists.Length];

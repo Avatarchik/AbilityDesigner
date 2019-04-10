@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Matki.ActorSystem
+namespace MB.ActorSystem
 {
     [RequireComponent(typeof(Actor))]
     public class DeathHandler : MonoBehaviour

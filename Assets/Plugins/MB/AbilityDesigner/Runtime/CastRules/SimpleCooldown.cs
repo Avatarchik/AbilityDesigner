@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Matki.AbilityDesigner
+namespace MB.AbilityDesigner
 {
     public class SimpleCooldown : CastRule
     {
@@ -28,6 +28,12 @@ namespace Matki.AbilityDesigner
         public override void ApplyCast(ref float userFloat)
         {
             userFloat = Time.timeSinceLevelLoad;
+        }
+
+        public float GetProgress(float userFloat)
+        {
+            float difference = Time.timeSinceLevelLoad - userFloat;
+            return difference / cooldown;
         }
     }
 }

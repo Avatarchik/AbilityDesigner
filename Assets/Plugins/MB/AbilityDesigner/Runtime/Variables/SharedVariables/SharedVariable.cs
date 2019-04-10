@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Matki.AbilityDesigner
+namespace MB.AbilityDesigner
 {
     public abstract class SharedVariable : ScriptableObject
     {

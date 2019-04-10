@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Matki.AbilityDesigner
+namespace MB.AbilityDesigner
 {
     [System.Serializable]
     public class PhaseListLink
@@ -12,6 +12,15 @@ namespace Matki.AbilityDesigner
         public int id { get { return m_ID; } internal set { m_ID = value; } }
 
         public void RunList()
+        {
+            PhaseList list = AbilityContext.instance.IDToPhaseList(id);
+            if (list != null)
+            {
+                list.OnUpdate();
+            }
+        }
+
+        public void ScheduleList()
         {
             PhaseList list = AbilityContext.instance.IDToPhaseList(id);
             if (list != null)

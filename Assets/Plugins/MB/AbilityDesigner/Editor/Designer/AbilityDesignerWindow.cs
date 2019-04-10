@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿#if UNITY_EDITOR
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Reflection;
 using UnityEditor.VersionControl;
 
-namespace Matki.AbilityDesigner.Edit
+namespace MB.AbilityDesigner.Edit
 {
     public class AbilityDesignerWindow : EditorWindow
     {
@@ -618,6 +619,7 @@ namespace Matki.AbilityDesigner.Edit
             GUILayout.BeginVertical(GUILayout.Height(100f));
             m_Ability.title = EditorGUILayout.TextField(m_Ability.title);
             m_Ability.description = EditorGUILayout.TextArea(m_Ability.description, GUILayout.ExpandHeight(true));
+            m_Ability.defaultLock = EditorGUILayout.Toggle(new GUIContent("Default Unlocked"), m_Ability.defaultLock);
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
             EndInspectorGroup();
@@ -1096,6 +1098,7 @@ namespace Matki.AbilityDesigner.Edit
             target.customTitle = EditorGUILayout.TextField(new GUIContent("Custom Title"), target.customTitle);
             target.customColor = EditorGUILayout.ColorField(new GUIContent("Custom Color"), target.customColor);
             target.breakOnFail = EditorGUILayout.Toggle(new GUIContent("Break On Fail"), target.breakOnFail);
+            target.instant = EditorGUILayout.Toggle(new GUIContent("Instant"), target.instant);
             GUILayout.EndVertical();
 
             SerializedObject serializedObject = new SerializedObject(target);
@@ -1120,7 +1123,7 @@ namespace Matki.AbilityDesigner.Edit
 
                 // Drau default property
                 SerializedProperty property = serializedObject.FindProperty(m_CachedFields[f].Name);
-                EditorGUILayout.PropertyField(property);
+                EditorGUILayout.PropertyField(property, true);
                 serializedObject.ApplyModifiedProperties();
             }
         }
@@ -2108,3 +2111,4 @@ namespace Matki.AbilityDesigner.Edit
         #endregion
     }
 }
+#endif

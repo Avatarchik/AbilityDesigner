@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Matki.AbilityDesigner.Phases
+namespace MB.AbilityDesigner.Phases
 {
     [PhaseCategory("Collision")]
     public class DetectTravelCollision : Phase
@@ -12,38 +12,63 @@ namespace Matki.AbilityDesigner.Phases
         public LayerMask m_Layer;
         public PhaseListLink m_RunOnHit;
 
-        private Vector3 m_LastPosition;
+        public SharedColliderList m_Hits;
+
+        public bool m_ExcludeOriginator;
+        public bool m_ExcludeTarget;
+
+        private SubVector3 m_LastPosition = new SubVector3();
         private List<Collider> m_AlreadyHit;
+
+        private Collider m_OriginCollider;
+        private Collider m_TargetCollider;
 
         protected override void OnCast()
         {
-            m_LastPosition = transform.position;
+            m_LastPosition.Value = transform.position;
+
+            if (originator != null)
+            {
+                m_OriginCollider = originator.gameObject.GetComponent<Collider>();
+            }
+            if (target != null)
+            {
+                m_TargetCollider = target.gameObject.GetComponent<Collider>();
+            }
+
             m_AlreadyHit = new List<Collider>();
         }
 
         protected override Result OnUpdate()
         {
-            Collider[] collision = Physics.OverlapCapsule(m_LastPosition, transform.position, m_HitRadius, m_Layer);
-            List<Collider> currentHits = new List<Collider>();
+            Collider[] collisions = Physics.OverlapCapsule(m_LastPosition.Value, transform.position, m_HitRadius, m_Layer);
+            m_LastPosition.Value = transform.position;
+            List<Collider> collision = new List<Collider>(collisions);
+            if (m_ExcludeOriginator)
+                collision.Remove(m_OriginCollider);
+            if (m_ExcludeTarget)
+                collision.Remove(m_TargetCollider);
+            
             List<Collider> validHits = new List<Collider>();
-            for (int h = 0; h < collision.Length; h++)
+            for (int h = 0; h < collision.Count; h++)
             {
                 if (!m_AlreadyHit.Contains(collision[h]))
                 {
                     validHits.Add(collision[h]);
                 }
             }
-            for (int h = m_AlreadyHit.Count; h >= 0; h--)
+            for (int h = m_AlreadyHit.Count - 1; h >= 0; h--)
             {
-                if (!currentHits.Contains(m_AlreadyHit[h]))
+                if (!collision.Contains(m_AlreadyHit[h]))
                 {
                     m_AlreadyHit.RemoveAt(h);
                 }
             }
+            m_AlreadyHit.AddRange(validHits);
 
-            // TODO: Set shared collider array to found colliders
+            m_Hits.Value = validHits;
 
-            if (collision.Length > 0)
+            if (collision.Count > 0)
             {
                 m_RunOnHit.RunList();
             }

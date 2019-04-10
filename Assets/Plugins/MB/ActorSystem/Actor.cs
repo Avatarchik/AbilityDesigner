@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Matki.ActorSystem
+namespace MB.ActorSystem
 {
     public class Actor : MonoBehaviour, AbilityDesigner.IAbilityUser
     {

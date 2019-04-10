@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿#if UNITY_EDITOR
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Matki.AbilityDesigner.Edit
+namespace MB.AbilityDesigner.Edit
 {
     [CreateAssetMenu(menuName = "Ability Designer/Editor Skin", order = 53)]
     public class EditorSkin : ScriptableObject
@@ -64,3 +65,4 @@ namespace Matki.AbilityDesigner.Edit
         #endregion
     }
 }
+#endif

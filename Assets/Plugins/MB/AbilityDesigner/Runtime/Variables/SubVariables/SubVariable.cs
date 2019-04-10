@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MB.Collections;
 
-namespace Matki.AbilityDesigner
+namespace MB.AbilityDesigner
 {
     [System.Serializable]
     public class SubVariable<T> : SerializableDictionary<int, T>

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Matki.AbilityDesigner.Phases
+namespace MB.AbilityDesigner.Phases
 {
     [PhaseIcon("{SkinIcons}Phase")]
     public abstract class Phase : PhaseCore

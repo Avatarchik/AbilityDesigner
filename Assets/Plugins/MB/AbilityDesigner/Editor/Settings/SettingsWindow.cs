@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿#if UNITY_EDITOR
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace Matki.AbilityDesigner.Edit
+namespace MB.AbilityDesigner.Edit
 {
     public class SettingsWindow : EditorWindow
     {
@@ -297,7 +298,7 @@ namespace Matki.AbilityDesigner.Edit
             for (int g = 0; g < guids.Length; g++)
             {
                 ScriptableObject obj = AssetDatabase.LoadAssetAtPath<ScriptableObject>(AssetDatabase.GUIDToAssetPath(guids[g]));
-                if (obj != null && obj.GetType() == typeof(EditorSkin))
+                if (obj != null && obj.GetType().Equals(typeof(EditorSkin)))
                 {
                     skins.Add((EditorSkin)obj);
                 }
@@ -320,3 +321,4 @@ namespace Matki.AbilityDesigner.Edit
         }
     }
 }
+#endif

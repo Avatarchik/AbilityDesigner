@@ -14,6 +14,7 @@ MonoBehaviour:
   m_Title: Circle
   m_Description: 
   m_Icon: {fileID: 2800000, guid: 46d3fc783b13f184a8d6752d196e7d50, type: 3}
+  m_DefaultLock: 1
   m_CastRules:
   - {fileID: 114917271851879404}
   - {fileID: 114203830274153748}
@@ -27,15 +28,18 @@ MonoBehaviour:
   - m_ID: 1
     m_Title: Collision Check
     m_Instant: 1
-    m_Phases: []
+    m_Phases:
+    - {fileID: 114794950074118884}
   - m_ID: 2
-    m_Title: New List
-    m_Instant: 0
-    m_Phases: []
+    m_Title: On Hit
+    m_Instant: 1
+    m_Phases:
+    - {fileID: 114644484298631068}
   m_SubInstanceLinks:
   - {fileID: 114140205885463556}
   - {fileID: 114584107796389484}
-  m_SharedVariables: []
+  m_SharedVariables:
+  - {fileID: 114150501552902416}
 --- !u!114 &114135369336856766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67,6 +71,20 @@ MonoBehaviour:
   m_Spawn: 0
   m_SpawnOffset: {x: 0, y: 0, z: 0}
   m_Obj: {fileID: 1606722856494212, guid: 44f522638a6dc664290bcd5f6363380d, type: 2}
+--- !u!114 &114150501552902416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a069dcb058038004c96a246725b688c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ID: 0
+  m_Title: Hits
+  m_Value: []
 --- !u!114 &114182735760499252
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -91,8 +109,8 @@ MonoBehaviour:
   m_SpeedPerInstance:
     m_Keys: 0000000001000000
     m_Values:
-    - 90
-    - 90
+    - 180
+    - 180
   m_Side:
     m_Keys: 0000000001000000
     m_Values:
@@ -104,7 +122,7 @@ MonoBehaviour:
     m_Bits: 512
   m_GroundOffset: 1
   m_RunWhile:
-    m_ID: -1
+    m_ID: 1
 --- !u!114 &114203830274153748
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -137,6 +155,51 @@ MonoBehaviour:
   m_Spawn: 1
   m_SpawnOffset: {x: 0, y: 0, z: 0}
   m_Obj: {fileID: 1606722856494212, guid: 44f522638a6dc664290bcd5f6363380d, type: 2}
+--- !u!114 &114644484298631068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9aa254b828bb6154cb987f7897146051, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CustomTitle: 
+  m_CustomColor: {r: 1, g: 1, b: 1, a: 1}
+  m_Instant: 1
+  m_BreakOnFail: 0
+  m_RunForSubInstances:
+  - {fileID: 114140205885463556}
+  - {fileID: 114584107796389484}
+--- !u!114 &114794950074118884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9c1d7a0ad8b35942b15d5e6b895b4e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CustomTitle: 
+  m_CustomColor: {r: 1, g: 1, b: 1, a: 1}
+  m_Instant: 1
+  m_BreakOnFail: 0
+  m_RunForSubInstances:
+  - {fileID: 114140205885463556}
+  - {fileID: 114584107796389484}
+  m_HitRadius: 1
+  m_Layer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RunOnHit:
+    m_ID: 2
+  m_Hits: {fileID: 114150501552902416}
+  m_ExcludeOriginator: 1
+  m_ExcludeTarget: 0
 --- !u!114 &114917271851879404
 MonoBehaviour:
   m_ObjectHideFlags: 0

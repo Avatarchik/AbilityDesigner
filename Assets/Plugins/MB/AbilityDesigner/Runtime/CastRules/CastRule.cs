@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Matki.AbilityDesigner
+namespace MB.AbilityDesigner
 {
     public abstract class CastRule : ScriptableObject
     {

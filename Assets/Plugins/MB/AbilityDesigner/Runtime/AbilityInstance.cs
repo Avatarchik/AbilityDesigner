@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Matki.AbilityDesigner
+namespace MB.AbilityDesigner
 {
     public class AbilityInstance : MonoBehaviour
     {
@@ -135,6 +135,8 @@ namespace Matki.AbilityDesigner
                         isDying = true;
                         return;
                     }
+                    break;
+                case Result.Running:
                     // If the list was instant then rerun
                     if (list.instant)
                     {

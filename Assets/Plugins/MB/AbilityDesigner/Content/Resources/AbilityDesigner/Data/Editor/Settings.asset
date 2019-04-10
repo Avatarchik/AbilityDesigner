@@ -13,19 +13,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_EditorSkin: {fileID: 11400000, guid: ea0f7888e3ab6d444bf60d04a63827fb, type: 2}
   m_GeneralTabShortcut:
-    m_ControlKey: 2
+    m_ControlKey: 3
     m_Key: 113
     m_Error: 0
   m_StructureTabShortcut:
-    m_ControlKey: 2
+    m_ControlKey: 3
     m_Key: 119
     m_Error: 0
   m_VariablesTabShortcut:
-    m_ControlKey: 2
+    m_ControlKey: 3
     m_Key: 101
     m_Error: 0
   m_InspectorTabShortcut:
-    m_ControlKey: 2
+    m_ControlKey: 3
     m_Key: 114
     m_Error: 0
   m_MoveLeftShortcut:

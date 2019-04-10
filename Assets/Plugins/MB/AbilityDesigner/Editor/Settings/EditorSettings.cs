@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿#if UNITY_EDITOR
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace Matki.AbilityDesigner.Edit
+namespace MB.AbilityDesigner.Edit
 {
     public class EditorSettings : ScriptableObject
     {
@@ -143,3 +144,4 @@ namespace Matki.AbilityDesigner.Edit
         #endregion
     }
 }
+#endif

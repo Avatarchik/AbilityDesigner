@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿#if UNITY_EDITOR
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Matki.AbilityDesigner.Edit
+namespace MB.AbilityDesigner.Edit
 {
     [System.Serializable]
     public class Shortcut
@@ -60,3 +61,4 @@ namespace Matki.AbilityDesigner.Edit
         }
     }
 }
+#endif

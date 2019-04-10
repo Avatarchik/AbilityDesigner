@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Matki.ActorSystem
+namespace MB.ActorSystem
 {
     public class AmunationCooldownDisplay : MonoBehaviour
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Matki.AbilityDesigner.Phases
+namespace MB.AbilityDesigner.Phases
 {
     [PhaseCategory("Transform")]
     public class MoveToTargetCircular : Phase
@@ -43,11 +43,11 @@ namespace Matki.AbilityDesigner.Phases
         {
             Vector3 center = Vector3.Lerp(m_StartPosition.Value, m_TargetPosition.Value, 0.5f);
             float diameter = Vector3.Distance(m_StartPosition.Value, m_TargetPosition.Value);
-            float circumference = Mathf.PI * diameter;
+            /*float circumference = Mathf.PI * diameter;
             float distance = m_SpeedPerInstance.Value / circumference;
-            float angle = Mathf.InverseLerp(0f, circumference, distance) * m_Side.Value * 360f;
+            float angle = Mathf.InverseLerp(0f, circumference, distance) * m_Side.Value * 360f;*/
 
-            Quaternion targetRotation = Quaternion.Euler(0f, angle * m_SpeedPerInstance.Value * Time.deltaTime, 0f) * Quaternion.Euler(m_CurrentAngle.Value);
+            Quaternion targetRotation = Quaternion.Euler(0f, m_SpeedPerInstance.Value * Time.deltaTime, 0f) * Quaternion.Euler(m_CurrentAngle.Value);
             m_CurrentAngle.Value = targetRotation.eulerAngles;
             Vector3 targetPos = center + (targetRotation * (m_StartPosition.Value - center));
 
@@ -55,7 +55,7 @@ namespace Matki.AbilityDesigner.Phases
             flatTarget.y = 0f;
             Vector3 flatPosition = transform.position;
             flatPosition.y = 0f;
-            if (Vector3.Distance(flatTarget, flatPosition) <= distance)
+            if (Vector3.Distance(flatTarget, flatPosition) <= 1f) //distance
             {
                 transform.position = m_TargetPosition.Value;
                 return Result.Success;
